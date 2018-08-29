@@ -40,9 +40,8 @@ public class ConflictingCarAccessibilityCheckTest
     {
         this.verifier.actual(this.setup.nonCarAccessCarNavigableAtlas(),
                 new ConflictingCarAccessibilityCheck(ConfigurationResolver.emptyConfiguration()));
-        this.verifier.verify(
-                flag -> Assert
-                        .assertTrue(flag.getInstructions().contains("restrictive car access")));
+        this.verifier.verify(flag -> Assert
+                .assertTrue(flag.getInstructions().contains("restrictive car access")));
     }
 
     @Test

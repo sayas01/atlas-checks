@@ -4,7 +4,7 @@
       "org.openstreetmap.atlas.checks.validation"
     ],
     "type": "org.openstreetmap.atlas.checks.base.BaseCheck",
-    "enabled.value.default": true
+    "enabled.value.default": false
   },
   "PoolSizeCheck": {
     "surface": {
@@ -345,5 +345,16 @@
       "difficulty": "NORMAL",
       "defaultPriority": "MEDIUM"
     }
+  },
+  "ConflictingCarAccessibilityCheck": {
+    "enabled": true,
+    "challenge": {
+      "description": "This task contains roads with conflicting highway and transportation tags",
+      "blurb": "Roads with conflicting car access tags",
+      "instruction": "Open your favorite editor and examine if there is conflict in highway tags.",
+      "difficulty": "NORMAL",
+      "tags":"highway"
+    }
+
   }
 }
