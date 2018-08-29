@@ -24,6 +24,7 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
     private static final String TEST_7 = "47.2136200921786,-122.438157125378";
     private static final String TEST_8 = "47.2136413561665,-122.437468430183";
     private static final String TEST_9 = "47.2137689399148,-122.436717126333";
+    // Atlas to test car navigable edges with car access
     @TestAtlas(
             // nodes
             nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
@@ -60,6 +61,7 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
                             @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
                                     "vehicle=no", "motorcar=yes", "motor_vehicle=no" }), })
     private Atlas carAccessCarNavigableAtlas;
+    // Atlas to test non-car navigable edges with car access
     @TestAtlas(
             // nodes
             nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
@@ -97,6 +99,7 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
                             @TestAtlas.Loc(value = TEST_1) }, tags = { "highway=PRIMARY",
                                     "access=yes", "motorcar=BUS", "motor_vehicle=yes" }), })
     private Atlas carAccessMetricHighwayAtlas;
+    // Atlas to test car navigable edges with non-car access
     @TestAtlas(
             // nodes
             nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
@@ -136,6 +139,7 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
                             @TestAtlas.Loc(value = TEST_9) }, tags = { "highway=ROAD", "access=yes",
                                     "motor_vehicle=yes", "motorcar=no" }), })
     private Atlas nonCarAccessCarNavigableAtlas;
+    // Atlas to test non-car navigable edges with non-car access
     @TestAtlas(
             // nodes
             nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),

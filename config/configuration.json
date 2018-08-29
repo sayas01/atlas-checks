@@ -350,8 +350,8 @@
     "enabled": true,
     "challenge": {
       "description": "This task contains roads with conflicting highway and transportation tags",
-      "blurb": "Roads with conflicting car access tags",
-      "instruction": "Open your favorite editor and examine if there is conflict in highway tags.",
+      "blurb": "Conflicting highway and transportation tags",
+      "instruction": "Open your favorite editor and examine if there is conflict in combination of highway tag and transportation tag.",
       "difficulty": "NORMAL",
       "tags":"highway"
     }

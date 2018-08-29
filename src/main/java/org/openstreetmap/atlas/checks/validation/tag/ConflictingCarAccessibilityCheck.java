@@ -38,8 +38,7 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
      * checks with this constructor, supplying a configuration that can be used to adjust any
      * parameters that the check uses during operation.
      *
-     * @param configuration
-     *            the JSON configuration for this check
+     * @param configuration the JSON configuration for this check
      */
     public ConflictingCarAccessibilityCheck(final Configuration configuration)
     {
@@ -49,8 +48,7 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     /**
      * This function validates if given {@link AtlasObject} is valid for the check.
      *
-     * @param object
-     *            the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
+     * @param object the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
      * @return {@code true} if this object should be checked
      */
     @Override
@@ -63,11 +61,11 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
                 // Make sure that the object has either MotorVehicleTag or MotorcarTag or VehicleTag
                 // and does not contain any conditional restrictions on these tags
                 && ((object.getTag(MotorVehicleTag.KEY).isPresent()
-                        && !object.getTag(MotorVehicleTag.KEY + CONDITIONAL).isPresent())
-                        || (object.getTag(MotorcarTag.KEY).isPresent()
-                                && !object.getTag(MotorcarTag.KEY + CONDITIONAL).isPresent())
-                        || (object.getTag(VehicleTag.KEY).isPresent())
-                                && !object.getTag(VehicleTag.KEY + CONDITIONAL).isPresent())
+                && !object.getTag(MotorVehicleTag.KEY + CONDITIONAL).isPresent())
+                || (object.getTag(MotorcarTag.KEY).isPresent()
+                && !object.getTag(MotorcarTag.KEY + CONDITIONAL).isPresent())
+                || (object.getTag(VehicleTag.KEY).isPresent())
+                && !object.getTag(VehicleTag.KEY + CONDITIONAL).isPresent())
                 // Make sure that only master edges are considered
                 && ((Edge) object).isMasterEdge()
                 // Make sure that the object has a Highway tag
@@ -79,10 +77,9 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     /**
      * This is the actual function that will check to see whether the object needs to be flagged.
      *
-     * @param object
-     *            the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
+     * @param object the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
      * @return an optional {@link CheckFlag} object that contains the problem object and
-     *         instructions on how to fix it, or the reason the object was flagged
+     * instructions on how to fix it, or the reason the object was flagged
      */
     @Override
     protected Optional<CheckFlag> flag(final AtlasObject object)
@@ -121,11 +118,10 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     /**
      * This function evaluates if the given {@link AtlasObject} is car accessible or not.
      *
-     * @param object
-     *            the {@link AtlasObject} that needs to be checked for car accessibility.
+     * @param object the {@link AtlasObject} that needs to be checked for car accessibility.
      * @return an optional {@link Boolean} to indicate if the {@link AtlasObject} is car accessible
-     *         or not. If the Optional is empty, do not consider the {@link AtlasObject} for further
-     *         check
+     * or not. If the Optional is empty, do not consider the {@link AtlasObject} for further
+     * check
      */
     private Optional<Boolean> checkIfCarAccessible(final Edge object)
     {
