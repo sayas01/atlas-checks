@@ -9,7 +9,7 @@ import org.openstreetmap.atlas.checks.validation.verifier.ConsumerBasedExpectedC
 /**
  * Tests for {@link ConflictingCarAccessibilityCheck}.
  *
- * @author sayana
+ * @author sayas01
  */
 public class ConflictingCarAccessibilityCheckTest
 {
