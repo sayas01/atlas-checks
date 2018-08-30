@@ -20,7 +20,7 @@ import org.openstreetmap.atlas.utilities.configuration.Configuration;
  * This check flags {@link Edge} with conflicting tag combination resulting from combining
  * car-navigable/non-car-navigable highway with different modes of transportation tags.
  *
- * @author sayana
+ * @author sayas01
  */
 public class ConflictingCarAccessibilityCheck extends BaseCheck
 {
