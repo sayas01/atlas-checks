@@ -7,7 +7,7 @@ import org.openstreetmap.atlas.utilities.testing.TestAtlas;
 /**
  * {@link ConflictingCarAccessibilityCheck} test data.
  *
- * @author sayana
+ * @author sayas01
  */
 public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
 {
