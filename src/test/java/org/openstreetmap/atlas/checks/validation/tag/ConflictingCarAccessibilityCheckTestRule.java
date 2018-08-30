@@ -91,13 +91,9 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
                                     "access=yes", "motor_vehicle=yes", "vehicle=no" }),
                     @TestAtlas.Edge(id = "1009000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5),
-                            @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=MOTORWAY",
-                                    "access=yes", "vehicle=yes", "motorcar=yes",
-                                    "motor_vehicle=no" }),
-                    @TestAtlas.Edge(id = "1007000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_13),
-                            @TestAtlas.Loc(value = TEST_1) }, tags = { "highway=PRIMARY",
-                                    "access=yes", "motorcar=BUS", "motor_vehicle=yes" }), })
+                            @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=SERVICE",
+                                    "access=yes", "vehicle=yes", "motorcar=yes", "bus=yes",
+                                    "motor_vehicle=no" }), })
     private Atlas carAccessMetricHighwayAtlas;
     // Atlas to test car navigable edges with non-car access
     @TestAtlas(

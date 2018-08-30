@@ -27,11 +27,17 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     private static final String CAR_NAVIGABLE_HIGHWAY_INSTRUCTION = "This OSM way {0,number,#} has a car navigable highway tag value combined with a restrictive car access tag value, please verify and make proper corrections if needed.";
     private static final String CONDITIONAL = ":conditional";
     private static final String METRIC_HIGHWAY_INSTRUCTION = "This OSM way  {0,number,#} has a non-car navigable highway tag value combined with an open car access tag value, please verify and make proper corrections if needed.";
-    private static final List<String> FALLBACK_INSTRUCTIONS = Arrays
-            .asList(CAR_NAVIGABLE_HIGHWAY_INSTRUCTION, METRIC_HIGHWAY_INSTRUCTION);
     private static final String NO = "no";
+    private static final String OVERRIDING_TAG_INSTRUCTION = "This OSM way  {0,number,#} is designated for specific vehicle use, consider to add access=NO to prevent general uses.";
+    private static final List<String> FALLBACK_INSTRUCTIONS = Arrays.asList(
+            CAR_NAVIGABLE_HIGHWAY_INSTRUCTION, METRIC_HIGHWAY_INSTRUCTION,
+            OVERRIDING_TAG_INSTRUCTION);
+    private static final List<String> TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT = Arrays.asList("bus",
+            "minibus", "motorcycle", "psv", "public_transportation", "good", "hsv", "agricultural",
+            "snowmobile", "hov", "emergency", "disabled", "hazmat");
     private static final String YES = "yes";
     private static final long serialVersionUID = 8896036998080132728L;
+    private List<String> tagsFilter;
 
     /**
      * The default constructor that must be supplied. The Atlas Checks framework will generate the
@@ -43,6 +49,8 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     public ConflictingCarAccessibilityCheck(final Configuration configuration)
     {
         super(configuration);
+        this.tagsFilter = (List<String>) configurationValue(configuration, "overriding.filter",
+                TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT);
     }
 
     /**
@@ -85,14 +93,29 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     protected Optional<CheckFlag> flag(final AtlasObject object)
     {
         final Optional<Boolean> carAccessible = checkIfCarAccessible((Edge) object);
+        boolean isOverridingTag = false;
         // If carAccessible is empty, do not consider the object for flagging
         if (!carAccessible.isPresent())
         {
             return Optional.empty();
         }
+        for (final String string : object.getOsmTags().keySet())
+        {
+            if (tagsFilter.contains(string))
+            {
+                isOverridingTag = true;
+                break;
+            }
+        }
+        if (isOverridingTag && !carAccessible.get() && HighwayTag.isCarNavigableHighway(object))
+        {
+            this.markAsFlagged(object.getOsmIdentifier());
+            return Optional.of(this.createFlag(object,
+                    this.getLocalizedInstruction(2, object.getOsmIdentifier())));
+        }
         // Checks if the object is tagged as metric highway that is non-car navigable but is car
         // accessible
-        if (carAccessible.get() && HighwayTag.isMetricHighway(object)
+        else if (!isOverridingTag && carAccessible.get() && HighwayTag.isMetricHighway(object)
                 && !HighwayTag.isCarNavigableHighway(object))
         {
             this.markAsFlagged(object.getOsmIdentifier());
@@ -106,6 +129,7 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
             return Optional.of(this.createFlag(object,
                     this.getLocalizedInstruction(0, object.getOsmIdentifier())));
         }
+
         return Optional.empty();
     }
 

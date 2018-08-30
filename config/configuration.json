@@ -348,6 +348,8 @@
   },
   "ConflictingCarAccessibilityCheck": {
     "enabled": true,
+    "overriding.filter":["bus", "minibus", "motorcycle", "psv", "public_transportation", "good", "hsv", "agricultural",
+      "snowmobile", "hov", "emergency", "disabled"],
     "challenge": {
       "description": "This task contains roads with conflicting highway and transportation tags",
       "blurb": "Conflicting highway and transportation tags",
