@@ -5,7 +5,7 @@ This check flags roads that have conflicting highway and transportation tags. A 
 access tag value with no specific vehicle use only tag 
  * A non-car navigable highway tag value combined with an open car access tag value
  
-Roads that are car navigable with specific vehicle use only tags such as `Motorcycle`=`YES` but have `Access`=`YES` would also be tagged in this check to prevent general use.
+Roads that are car navigable with designated vehicle tags such as `Motorcycle`=`YES` but have `Access`=`YES` would also be tagged in this check to prevent general use.
 #### Live Examples
 1. The way [id:369590090](https://www.openstreetmap.org/way/369590090) has conflicting values between `HighwayTag` (`highway`=`RESIDENTIAL`) and `VehicleTag`(`vehicle`=`NO`). This has `bicyle`=`DESIGNATED` and so the `Highway` tag should have been `highway=CYCLEWAY`.
 #### Code Review

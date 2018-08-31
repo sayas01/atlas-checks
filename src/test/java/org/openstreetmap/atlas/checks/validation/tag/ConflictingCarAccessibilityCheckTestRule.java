@@ -39,27 +39,27 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
             edges = {
                     @TestAtlas.Edge(coordinates = { @TestAtlas.Loc(value = TEST_1),
                             @TestAtlas.Loc(value = TEST_3) }, tags = { "highway=ROAD", "access=yes",
-                                    "vehicle=yes" }),
+                            "vehicle=yes" }),
                     @TestAtlas.Edge(id = "1001000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_3), @TestAtlas.Loc(value = TEST_4),
                             @TestAtlas.Loc(value = TEST_5) }, tags = { "highway=ROAD", "access=yes",
-                                    "motorcar=yes" }),
+                            "motorcar=yes" }),
                     @TestAtlas.Edge(id = "1002000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5), @TestAtlas.Loc(value = TEST_6),
                             @TestAtlas.Loc(value = TEST_7) }, tags = { "highway=ROAD", "access=yes",
-                                    "motor_vehicle=yes" }),
+                            "motor_vehicle=yes" }),
                     @TestAtlas.Edge(id = "1008000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_3),
                             @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
-                                    "motor_vehicle=yes", "vehicle=no" }),
+                            "motor_vehicle=yes", "vehicle=no" }),
                     @TestAtlas.Edge(id = "1009000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5),
                             @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
-                                    "vehicle=yes", "motorcar=yes", "motor_vehicle=no" }),
+                            "vehicle=yes", "motorcar=yes", "motor_vehicle=no" }),
                     @TestAtlas.Edge(id = "1001100001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5),
                             @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
-                                    "vehicle=no", "motorcar=yes", "motor_vehicle=no" }), })
+                            "vehicle=no", "motorcar=yes", "motor_vehicle=no" }), })
     private Atlas carAccessCarNavigableAtlas;
     // Atlas to test non-car navigable edges with car access
     @TestAtlas(
@@ -76,24 +76,24 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
             edges = {
                     @TestAtlas.Edge(coordinates = { @TestAtlas.Loc(value = TEST_1),
                             @TestAtlas.Loc(value = TEST_3) }, tags = { "highway=STEPS",
-                                    "access=yes", "vehicle=yes" }),
+                            "access=yes", "vehicle=yes" }),
                     @TestAtlas.Edge(id = "1001000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_3), @TestAtlas.Loc(value = TEST_4),
                             @TestAtlas.Loc(value = TEST_5) }, tags = { "highway=STEPS",
-                                    "access=yes", "motorcar=yes" }),
+                            "access=yes", "motorcar=yes" }),
                     @TestAtlas.Edge(id = "1002000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5), @TestAtlas.Loc(value = TEST_6),
                             @TestAtlas.Loc(value = TEST_7) }, tags = { "highway=STEPS",
-                                    "access=yes", "motor_vehicle=yes" }),
+                            "access=yes", "motor_vehicle=yes" }),
                     @TestAtlas.Edge(id = "1008000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_3),
                             @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=FOOTWAY",
-                                    "access=yes", "motor_vehicle=yes", "vehicle=no" }),
+                            "access=yes", "motor_vehicle=yes", "vehicle=no" }),
                     @TestAtlas.Edge(id = "1009000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5),
                             @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=SERVICE",
-                                    "access=yes", "vehicle=yes", "motorcar=yes", "bus=yes",
-                                    "motor_vehicle=no" }), })
+                            "access=yes", "vehicle=yes", "motorcar=yes", "bus=yes",
+                            "motor_vehicle=no" }), })
     private Atlas carAccessMetricHighwayAtlas;
     // Atlas to test designated use edges that are car navigable
     @TestAtlas(
@@ -113,15 +113,15 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
             // edges
             edges = { @TestAtlas.Edge(id = "1000000001", coordinates = {
                     @TestAtlas.Loc(value = TEST_1), @TestAtlas.Loc(value = TEST_2) }, tags = {
-                            "highway=MOTORWAY", "access=yes", "vehicle=no", "minibus=yes" }),
+                    "highway=MOTORWAY", "access=yes", "vehicle=no", "minibus=yes" }),
                     @TestAtlas.Edge(id = "1001000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_3),
                             @TestAtlas.Loc(value = TEST_4) }, tags = { "highway=ROAD", "access=yes",
-                                    "motorcar=no", "bus=yes" }),
+                            "motorcar=no", "bus=yes" }),
                     @TestAtlas.Edge(id = "1002000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5),
                             @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
-                                    "motor_vehicle=no", "motorcycle=yes" }), })
+                            "motor_vehicle=no", "motorcycle=yes" }), })
     private Atlas designatedUseCarNavigableAtlas;
     // Atlas to test car navigable edges with non-car access
     @TestAtlas(
@@ -141,27 +141,27 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
             // edges
             edges = { @TestAtlas.Edge(id = "1000000001", coordinates = {
                     @TestAtlas.Loc(value = TEST_1), @TestAtlas.Loc(value = TEST_2) }, tags = {
-                            "highway=MOTORWAY", "access=yes", "vehicle=no" }),
+                    "highway=MOTORWAY", "access=yes", "vehicle=no" }),
                     @TestAtlas.Edge(id = "1001000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_3),
                             @TestAtlas.Loc(value = TEST_4) }, tags = { "highway=ROAD", "access=yes",
-                                    "motorcar=no" }),
+                            "motorcar=no" }),
                     @TestAtlas.Edge(id = "1002000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5),
                             @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
-                                    "motor_vehicle=no" }),
+                            "motor_vehicle=no" }),
                     @TestAtlas.Edge(id = "1004000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_9),
                             @TestAtlas.Loc(value = TEST_10) }, tags = { "highway=ROAD",
-                                    "access=yes", "motorcar=no", "vehicle=yes" }),
+                            "access=yes", "motorcar=no", "vehicle=yes" }),
                     @TestAtlas.Edge(id = "1006000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_12),
                             @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
-                                    "motor_vehicle=no", "vehicle=yes" }),
+                            "motor_vehicle=no", "vehicle=yes" }),
                     @TestAtlas.Edge(id = "1007000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_12),
                             @TestAtlas.Loc(value = TEST_9) }, tags = { "highway=ROAD", "access=yes",
-                                    "motor_vehicle=yes", "motorcar=no" }), })
+                            "motor_vehicle=yes", "motorcar=no" }), })
     private Atlas nonCarAccessCarNavigableAtlas;
     // Atlas to test non-car navigable edges with non-car access
     @TestAtlas(
@@ -181,27 +181,27 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
             // edges
             edges = { @TestAtlas.Edge(id = "1000000001", coordinates = {
                     @TestAtlas.Loc(value = TEST_1), @TestAtlas.Loc(value = TEST_2) }, tags = {
-                            "highway=FOOTWAY", "access=yes", "vehicle=no" }),
+                    "highway=FOOTWAY", "access=yes", "vehicle=no" }),
                     @TestAtlas.Edge(id = "1001000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_3),
                             @TestAtlas.Loc(value = TEST_4) }, tags = { "highway=FOOTWAY",
-                                    "access=yes", "motorcar=no" }),
+                            "access=yes", "motorcar=no" }),
                     @TestAtlas.Edge(id = "1002000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5),
                             @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=FOOTWAY",
-                                    "access=yes", "motor_vehicle=no" }),
+                            "access=yes", "motor_vehicle=no" }),
                     @TestAtlas.Edge(id = "1004000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_9),
                             @TestAtlas.Loc(value = TEST_10) }, tags = { "highway=CYCLEWAY",
-                                    "access=yes", "motorcar=no", "vehicle=yes" }),
+                            "access=yes", "motorcar=no", "vehicle=yes" }),
                     @TestAtlas.Edge(id = "1006000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_12),
                             @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=PATH", "access=yes",
-                                    "motor_vehicle=no", "vehicle=yes" }),
+                            "motor_vehicle=no", "vehicle=yes" }),
                     @TestAtlas.Edge(id = "1007000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_12),
                             @TestAtlas.Loc(value = TEST_9) }, tags = { "highway=PEDESTRIAN",
-                                    "access=yes", "motor_vehicle=yes", "motorcar=no" }), })
+                            "access=yes", "motor_vehicle=yes", "motorcar=no" }), })
     private Atlas nonCarAccessMetricHighwayAtlas;
 
     public Atlas carAccessCarNavigableAtlas()
