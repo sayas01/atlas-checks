@@ -45,6 +45,23 @@ public class ConflictingCarAccessibilityCheckTest
     }
 
     @Test
+    public void testDesignatedUseCarNavigable()
+    {
+        this.verifier.actual(this.setup.designatedUseCarNavigableAtlas(),
+                new ConflictingCarAccessibilityCheck(ConfigurationResolver.emptyConfiguration()));
+        this.verifier.globallyVerify(flags -> Assert.assertEquals(3, flags.size()));
+    }
+
+    @Test
+    public void testDesignatedUseCarNavigableInstruction()
+    {
+        this.verifier.actual(this.setup.designatedUseCarNavigableAtlas(),
+                new ConflictingCarAccessibilityCheck(ConfigurationResolver.emptyConfiguration()));
+        this.verifier.verify(flag -> Assert
+                .assertTrue(flag.getInstructions().contains("designated for specific vehicle")));
+    }
+
+    @Test
     public void testMetricHighwayInstruction()
     {
         this.verifier.actual(this.setup.carAccessMetricHighwayAtlas(),
