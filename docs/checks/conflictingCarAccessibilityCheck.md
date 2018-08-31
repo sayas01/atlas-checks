@@ -2,8 +2,10 @@
 
 This check flags roads that have conflicting highway and transportation tags. A conflict in these tags occurs when either of the two conditions is met:
  * A car navigable highway tag value combined with a restrictive car 
-access tag value 
+access tag value with no specific vehicle use only tag 
  * A non-car navigable highway tag value combined with an open car access tag value
+ 
+Roads that are car navigable with specific vehicle use only tags such as `Motorcycle`=`YES` but have `Access`=`YES` would also be tagged in this check to prevent general use.
 #### Live Examples
 1. The way [id:369590090](https://www.openstreetmap.org/way/369590090) has conflicting values between `HighwayTag` (`highway`=`RESIDENTIAL`) and `VehicleTag`(`vehicle`=`NO`). This has `bicyle`=`DESIGNATED` and so the `Highway` tag should have been `highway=CYCLEWAY`.
 #### Code Review
@@ -33,29 +35,47 @@ Our first goal is to validate the incoming Atlas object. Valid features for this
                 && !this.isFlagged(object.getOsmIdentifier());
     }
 ```
-The valid objects are then checked for car accessibility. If the object meets any of the two conditions mentioned above for a conflict to  occur, it will be flagged.
+The valid objects are then checked for car accessibility and designed vehicle use only tags. If the object meets any of the two conditions mentioned above for a conflict to  occur and does not have a designed use tag, it will be flagged. This
+method also flags objects with specific vehicle use only tag (such tags can be given in the config file; if not specified, default set of tags in the source code would be considered) but have car navigable highway tag.
 ```java
     @Override
     protected Optional<CheckFlag> flag(final AtlasObject object)
     {
+        boolean isOverridingTag = false;
         final Optional<Boolean> carAccessible = checkIfCarAccessible((Edge) object);
         if (!carAccessible.isPresent())
         {
             return Optional.empty();
         }
-        if (carAccessible.get() && HighwayTag.isMetricHighway(object)
+        for (final String tagKey : object.getOsmTags().keySet())
+        {
+            if (tagsFilter.contains(tagKey) && object.getTag(tagKey).get().equalsIgnoreCase(YES))
+            {
+                isOverridingTag = true;
+                break;
+            }
+        }
+        if (isOverridingTag && !carAccessible.get() && HighwayTag.isCarNavigableHighway(object))
+        {
+            this.markAsFlagged(object.getOsmIdentifier());
+            return Optional.of(this.createFlag(object,
+                    this.getLocalizedInstruction(2, object.getOsmIdentifier())));
+        }
+        else if (!isOverridingTag && carAccessible.get() && HighwayTag.isMetricHighway(object)
                 && !HighwayTag.isCarNavigableHighway(object))
         {
             this.markAsFlagged(object.getOsmIdentifier());
             return Optional.of(this.createFlag(object,
                     this.getLocalizedInstruction(1, object.getOsmIdentifier())));
         }
-        else if (!carAccessible.get() && HighwayTag.isCarNavigableHighway(object))
+        else if (!isOverridingTag && !carAccessible.get()
+                && HighwayTag.isCarNavigableHighway(object))
         {
             this.markAsFlagged(object.getOsmIdentifier());
             return Optional.of(this.createFlag(object,
                     this.getLocalizedInstruction(0, object.getOsmIdentifier())));
         }
+
         return Optional.empty();
     }
 ```
@@ -63,7 +83,7 @@ The following method validates if an `AtlasObject` is car accessible or not. Car
 `MotorcarTag`,`MotorVehicleTag` and `VehicleTag`. If any one of the above is present, the tag's value will determine the car accessibility. The check for
 the tag is based on the hierarchy - `MotorcarTag` -> `MotorVehicleTag` -> `VehicleTag`.
 ```java
-    private Optional<Boolean> checkIfCarAccessible(final Edge object)
+   private Optional<Boolean> checkIfCarAccessible(final Edge object)
     {
         String tagValue = null;
         if (object.getTag(MotorcarTag.KEY).isPresent())
