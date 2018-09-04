@@ -108,7 +108,7 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
                     @TestAtlas.Edge(id = "1001000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_3),
                             @TestAtlas.Loc(value = TEST_4) }, tags = { "highway=ROAD", "access=yes",
-                                    "motorcar=no", "bus=yes" }),
+                                    "motorcar=no", "minibus=yes" }),
                     @TestAtlas.Edge(id = "1002000001", coordinates = {
                             @TestAtlas.Loc(value = TEST_5),
                             @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",

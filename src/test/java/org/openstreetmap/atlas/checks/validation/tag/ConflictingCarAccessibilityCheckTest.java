@@ -53,6 +53,16 @@ public class ConflictingCarAccessibilityCheckTest
     }
 
     @Test
+    public void testDesignatedUseCarNavigableInlineConfigInstruction()
+    {
+        this.verifier.actual(this.setup.designatedUseCarNavigableAtlas(),
+                new ConflictingCarAccessibilityCheck(ConfigurationResolver.inlineConfiguration(
+                        "{\"ConflictingCarAccessibilityCheck\":{\"accessibility.overriding.tags\":[\"bus\",\"taxi\"]}}")));
+        this.verifier.verify(flag -> Assert
+                .assertTrue(flag.getInstructions().contains("restrictive car access")));
+    }
+
+    @Test
     public void testDesignatedUseCarNavigableInstruction()
     {
         this.verifier.actual(this.setup.designatedUseCarNavigableAtlas(),
