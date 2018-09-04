@@ -17,18 +17,19 @@ import org.openstreetmap.atlas.tags.annotations.validation.Validators;
 import org.openstreetmap.atlas.utilities.configuration.Configuration;
 
 /**
- * This check flags {@link Edge} with conflicting tag combinations resulting from combining
- * car-navigable/non-car-navigable highway with different modes of transportation tags. This check flags the following tag combinations:
- * 1) Car-navigable way with restricted car access and with no designated vehicle use tags like {@link org.openstreetmap.atlas.tags.MotorcycleTag}
- * 2) Car-navigable way with restricted car access and with designated vehicle use tags like {@link org.openstreetmap.atlas.tags.MotorcycleTag}
- * 3) Non-car-navigable way with open car access
+ * This check flags {@link Edge}s with conflicting tag combinations resulting from combining
+ * car-navigable/non-car-navigable highways with different modes of transportation tags. This check
+ * flags the following tag combinations: 1) Car-navigable way with restricted car access and with no
+ * designated vehicle use tags like {@link org.openstreetmap.atlas.tags.MotorcycleTag} 2)
+ * Car-navigable way with restricted car access and with designated vehicle use tags like
+ * {@link org.openstreetmap.atlas.tags.MotorcycleTag} 3) Non-car-navigable way with open car access
  * Car accessibility is determined by {@link #checkIfCarAccessible(Edge)}
  *
  * @author sayas01
  */
 public class ConflictingCarAccessibilityCheck extends BaseCheck
 {
-    private static final String CAR_ACCESSIBLE_DESIGNATED_HIGHWAY_INSTRUCTION = "This OSM way  {0,number,#} is designated for specific vehicle uses, consider to add access=NO to prevent general uses.";
+    private static final String CAR_ACCESSIBLE_DESIGNATED_HIGHWAY_INSTRUCTION = "This OSM way {0,number,#} is designated for specific vehicles only, consider adding access=NO to prevent general use.";
     private static final String CAR_ACCESSIBLE_NON_CAR_NAVIGABLE_INSTRUCTION = "This OSM way  {0,number,#} has a non-car navigable highway tag value combined with an open car access tag value, please verify and make proper corrections if needed.";
     private static final String CAR_NAVIGABLE_RESTRICTED_ACCESS_HIGHWAY_INSTRUCTION = "This OSM way {0,number,#} has a car navigable highway tag value combined with a restrictive car access tag value, please verify and make proper corrections if needed.";
     private static final String CONDITIONAL = ":conditional";
@@ -37,10 +38,10 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
             CAR_ACCESSIBLE_NON_CAR_NAVIGABLE_INSTRUCTION,
             CAR_ACCESSIBLE_DESIGNATED_HIGHWAY_INSTRUCTION);
     private static final String NO = "no";
-    private static final List<String> TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT = Arrays
-            .asList("bus", "minibus", "motorcycle", "taxi", "tourist_bus", "share_taxi", "psv",
-                    "goods", "hsv", "agricultural", "snowmobile", "hov", "public_transportation",
-                    "emergency", "disabled", "hazmat");
+    private static final List<String> TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT = Arrays.asList("bus",
+            "minibus", "motorcycle", "taxi", "tourist_bus", "share_taxi", "psv", "goods", "hsv",
+            "agricultural", "snowmobile", "hov", "public_transportation", "emergency", "disabled",
+            "hazmat");
     private static final String YES = "yes";
     private static final long serialVersionUID = 8896036998080132728L;
     private final List<String> tagsFilter;
@@ -50,7 +51,8 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
      * checks with this constructor, supplying a configuration that can be used to adjust any
      * parameters that the check uses during operation.
      *
-     * @param configuration the JSON configuration for this check
+     * @param configuration
+     *            the JSON configuration for this check
      */
     public ConflictingCarAccessibilityCheck(final Configuration configuration)
     {
@@ -60,15 +62,14 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     }
 
     /**
-     * This function validates if given {@link AtlasObject} is valid for the check. A valid {@link AtlasObject} for this check must have the below properties:
-     * 1) Is an Edge
-     * 2) Has a highway tag
-     * 3) AccessTag for the object is not "no"
-     * 4) Has either `MotorVehicleTag` or `MotorcarTag` or `VehicleTag` and none of these are conditional tags
-     * 5) Is a master edge
-     * 6) Is not a way sectioned duplicate
+     * This function validates if given {@link AtlasObject} is valid for the check. A valid
+     * {@link AtlasObject} for this check must have the below properties: 1) Is an Edge 2) Has a
+     * highway tag 3) AccessTag for the object is not "no" 4) Has either `MotorVehicleTag` or
+     * `MotorcarTag` or `VehicleTag` and none of these are conditional tags 5) Is a master edge 6)
+     * An edge with the same OSM id has not already been flagged.
      *
-     * @param object the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
+     * @param object
+     *            the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
      * @return {@code true} if this object should be checked
      */
     @Override
@@ -81,25 +82,26 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
                 // Make sure that the object has either MotorVehicleTag or MotorcarTag or VehicleTag
                 // and does not contain any conditional restrictions on these tags
                 && ((object.getTag(MotorVehicleTag.KEY).isPresent()
-                && !object.getTag(MotorVehicleTag.KEY + CONDITIONAL).isPresent())
-                || (object.getTag(MotorcarTag.KEY).isPresent()
-                && !object.getTag(MotorcarTag.KEY + CONDITIONAL).isPresent())
-                || (object.getTag(VehicleTag.KEY).isPresent())
-                && !object.getTag(VehicleTag.KEY + CONDITIONAL).isPresent())
+                        && !object.getTag(MotorVehicleTag.KEY + CONDITIONAL).isPresent())
+                        || (object.getTag(MotorcarTag.KEY).isPresent()
+                                && !object.getTag(MotorcarTag.KEY + CONDITIONAL).isPresent())
+                        || (object.getTag(VehicleTag.KEY).isPresent())
+                                && !object.getTag(VehicleTag.KEY + CONDITIONAL).isPresent())
                 // Make sure that only master edges are considered
                 && ((Edge) object).isMasterEdge()
                 // Make sure that the object has a Highway tag
                 && Validators.isOfType(object, HighwayTag.class, HighwayTag.values())
-                // Make sure that way sectioned duplicates are not considered
+                // Make sure that the object has not been previously flagged
                 && !this.isFlagged(object.getOsmIdentifier());
     }
 
     /**
      * This is the actual function that will check to see whether the object needs to be flagged.
      *
-     * @param object the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
+     * @param object
+     *            the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
      * @return an optional {@link CheckFlag} object that contains the problem object and
-     * instructions on how to fix it, or the reason the object was flagged
+     *         instructions on how to fix it, or the reason the object was flagged
      */
     @Override
     protected Optional<CheckFlag> flag(final AtlasObject object)
@@ -156,13 +158,15 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     }
 
     /**
-     * This function evaluates if the given {@link AtlasObject} is car accessible or not based on the three transporation tags : {@link MotorcarTag},
-     * {@link MotorVehicleTag} and {@link VehicleTag}.
+     * This function evaluates if the given {@link AtlasObject} is car accessible or not based on
+     * the three transporation tags : {@link MotorcarTag}, {@link MotorVehicleTag} and
+     * {@link VehicleTag}.
      *
-     * @param object the {@link AtlasObject} that needs to be checked for car accessibility.
+     * @param object
+     *            the {@link AtlasObject} that needs to be checked for car accessibility.
      * @return an optional {@link Boolean} to indicate if the {@link AtlasObject} is car accessible
-     * or not. If the Optional is empty, do not consider the {@link AtlasObject} for further
-     * check
+     *         or not. If the Optional is empty, do not consider the {@link AtlasObject} for further
+     *         check
      */
     private Optional<Boolean> checkIfCarAccessible(final Edge object)
     {
