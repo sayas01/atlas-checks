@@ -13,6 +13,7 @@
     }
   },
   "OrphanNodeCheck": {
+
   },
   "AddressPointMatchCheck": {
     "bounds.size": 150.0,
@@ -24,14 +25,14 @@
       "defaultPriority": "LOW"
     }
   },
-  "AreasWithHighwayTagCheck": {
-    "tag.filters": "highway->!pedestrian&area->!yes",
-    "challenge": {
-      "description": "A Highway should never be tagged as an area, all these tasks involve highways that have been.",
-      "blurb": "Highways should not be tagged as Areas.",
-      "instruction": "Remove highway tag from feature with area tag.",
-      "difficulty": "EASY",
-      "tags": "highway,landuse"
+  "AreasWithHighwayTagCheck":{
+    "tag.filters":"highway->!pedestrian&area->!yes",
+    "challenge":{
+      "description":"A Highway should never be tagged as an area, all these tasks involve highways that have been.",
+      "blurb":"Highways should not be tagged as Areas.",
+      "instruction":"Remove highway tag from feature with area tag.",
+      "difficulty":"EASY",
+      "tags":"highway,landuse"
     }
   },
   "BuildingRoadIntersectionCheck": {
@@ -42,24 +43,14 @@
       "difficulty": "EASY",
       "defaultPriority": "LOW",
       "highPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=motorway",
-          "highway=motorway_link",
-          "highway=trunk",
-          "highway=trunk_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
       },
       "mediumPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=primary",
-          "highway=primary_link",
-          "highway=secondary",
-          "highway=secondary_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
       },
-      "tags": "building,highway"
+      "tags":"building,highway"
     }
   },
   "ConflictingAreaTagCombination": {
@@ -114,55 +105,46 @@
       "difficulty": "EASY",
       "defaultPriority": "LOW",
       "highPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=motorway",
-          "highway=motorway_link",
-          "highway=trunk",
-          "highway=trunk_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
       },
       "mediumPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=primary",
-          "highway=primary_link",
-          "highway=secondary",
-          "highway=secondary_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
       },
-      "tags": "highway"
+      "tags":"highway"
     }
   },
-  "IntersectingBuildingsCheck": {
+  "IntersectingBuildingsCheck":
+  {
     "intersection.lower.limit": 0.01,
     "challenge": {
       "description": "Buildings that intersect, contain, or overlap each other.",
       "blurb": "Intersecting Buildings",
       "instruction": "Correct intersecting buildings by moving them or dissolving one into another.",
       "difficulty": "NORMAL",
-      "tags": "building"
+      "tags":"building"
     }
   },
-  "InvalidAccessTagCheck": {
-    "tags.filter": "public_transport->!yes&psv->!yes&bus->!yes&emergency->!yes&motor_vehicle->!no&vehicle->!no&motorcar->!no",
-    "minimum.highway.type": "residential",
+  "InvalidAccessTagCheck":{
+    "tags.filter":"public_transport->!yes&psv->!yes&bus->!yes&emergency->!yes&motor_vehicle->!no&vehicle->!no&motorcar->!no",
+    "minimum.highway.type":"residential",
     "challenge": {
       "description": "Tasks containing invalid access tags",
       "blurb": "Invalid Access Tags",
       "instruction": "Correct the displayed invalid access=no tag.",
       "difficulty": "NORMAL",
-      "tags": "access,highway"
+      "tags":"access,highway"
     }
   },
   "InvalidLanesTagCheck": {
     "lanes.filter": "Lanes->1,1.5,2,3,4,5,6,7,8,9,10",
-    "challenge": {
-      "description": "Tasks contain invalid values for the lanes tag.",
-      "blurb": "Invalid Lanes Tags",
-      "instruction": "Change the lanes tag to have a valid and representative value.",
-      "difficulty": "EASY",
-      "tags": "lanes,highway"
+    "challenge":{
+      "description":"Tasks contain invalid values for the lanes tag.",
+      "blurb":"Invalid Lanes Tags",
+      "instruction":"Change the lanes tag to have a valid and representative value.",
+      "difficulty":"EASY",
+      "tags":"lanes,highway"
     }
   },
   "InvalidTurnRestrictionCheck": {
@@ -171,88 +153,17 @@
       "blurb": "Invalid Turn Restrictions",
       "instruction": "Correct the displayed invalid turn restriction",
       "difficulty": "HARD",
-      "tags": "highway"
+      "tags":"highway"
     }
   },
-  "MalformedRoundaboutCheck": {
-    "traffic.countries.left": [
-      "AIA",
-      "ATG",
-      "AUS",
-      "BGD",
-      "BHS",
-      "BMU",
-      "BRB",
-      "BRN",
-      "BTN",
-      "BWA",
-      "CCK",
-      "COK",
-      "CXR",
-      "CYM",
-      "CYP",
-      "DMA",
-      "FJI",
-      "FLK",
-      "GBR",
-      "GGY",
-      "GRD",
-      "GUY",
-      "HKG",
-      "IDN",
-      "IMN",
-      "IND",
-      "IRL",
-      "JAM",
-      "JEY",
-      "JPN",
-      "KEN",
-      "KIR",
-      "KNA",
-      "LCA",
-      "LKA",
-      "LSO",
-      "MAC",
-      "MDV",
-      "MLT",
-      "MOZ",
-      "MSR",
-      "MUS",
-      "MWI",
-      "MYS",
-      "NAM",
-      "NFK",
-      "NIU",
-      "NPL",
-      "NRU",
-      "NZL",
-      "PAK",
-      "PCN",
-      "PNG",
-      "SGP",
-      "SGS",
-      "SHN",
-      "SLB",
-      "SUR",
-      "SWZ",
-      "SYC",
-      "TCA",
-      "THA",
-      "TKL",
-      "TLS",
-      "TON",
-      "TTO",
-      "TUV",
-      "TZA",
-      "UGA",
-      "VCT",
-      "VGB",
-      "VIR",
-      "WSM",
-      "ZAF",
-      "ZMB",
-      "ZWE"
-    ],
+  "MalformedRoundaboutCheck" : {
+    "traffic.countries.left":["AIA", "ATG", "AUS", "BGD", "BHS", "BMU", "BRB", "BRN", "BTN", "BWA",
+      "CCK", "COK", "CXR", "CYM", "CYP", "DMA", "FJI", "FLK", "GBR", "GGY", "GRD",
+      "GUY", "HKG", "IDN", "IMN", "IND", "IRL", "JAM", "JEY", "JPN", "KEN", "KIR",
+      "KNA", "LCA", "LKA", "LSO", "MAC", "MDV", "MLT", "MOZ", "MSR", "MUS", "MWI",
+      "MYS", "NAM", "NFK", "NIU", "NPL", "NRU", "NZL", "PAK", "PCN", "PNG", "SGP",
+      "SGS", "SHN", "SLB", "SUR", "SWZ", "SYC", "TCA", "THA", "TKL", "TLS", "TON",
+      "TTO", "TUV", "TZA", "UGA", "VCT", "VGB", "VIR", "WSM", "ZAF", "ZMB", "ZWE"],
     "challenge": {
       "description": "Tasks contain roundabouts that are malformed.",
       "blurb": "Malformed roundabouts",
@@ -268,22 +179,15 @@
       "difficulty": "HARD"
     }
   },
-  "OverlappingAOIPolygonCheck": {
-    "aoi.tags.filters": [
-      "amenity->FESTIVAL_GROUNDS",
-      "amenity->GRAVE_YARD|landuse->CEMETERY",
+  "OverlappingAOIPolygonCheck":{
+    "aoi.tags.filters": ["amenity->FESTIVAL_GROUNDS", "amenity->GRAVE_YARD|landuse->CEMETERY",
       "boundary->NATIONAL_PARK,PROTECTED_AREA|leisure->NATURE_RESERVE,PARK",
-      "historic->BATTLEFIELD",
-      "landuse->FOREST|natural->WOOD",
+      "historic->BATTLEFIELD", "landuse->FOREST|natural->WOOD",
       "landuse->RECREATION_GROUND|leisure->RECREATION_GROUND",
-      "landuse->VILLAGE_GREEN|leisure->PARK",
-      "leisure->GARDEN",
-      "leisure->GOLF_COURSE|sport->GOLF",
-      "leisure->PARK&name->*",
-      "natural->BEACH",
-      "tourism->ZOO"
-    ],
-    "intersect.minimum.limit": 0.01,
+      "landuse->VILLAGE_GREEN|leisure->PARK", "leisure->GARDEN",
+      "leisure->GOLF_COURSE|sport->GOLF", "leisure->PARK&name->*", "natural->BEACH",
+      "tourism->ZOO"],
+    "intersect.minimum.limit":0.01,
     "challenge": {
       "description": "Tasks containing overlapping AOI ways",
       "blurb": "Overlapping AOI Polygon",
@@ -299,24 +203,14 @@
       "difficulty": "NORMAL",
       "defaultPriority": "LOW",
       "highPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=motorway",
-          "highway=motorway_link",
-          "highway=trunk",
-          "highway=trunk_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
       },
       "mediumPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=primary",
-          "highway=primary_link",
-          "highway=secondary",
-          "highway=secondary_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
       },
-      "tags": "highway"
+      "tags":"highway"
     }
   },
   "RoundaboutValenceCheck": {
@@ -330,7 +224,7 @@
     }
   },
   "SelfIntersectingPolylineCheck": {
-    "tags.filter": "highway->*&highway->!construction&highway->!footway&highway->!path|building->*",
+    "tags.filter":"highway->*&highway->!construction&highway->!footway&highway->!path|building->*",
     "challenge": {
       "description": "Verify that the same Polyline does not intersect itself at any point.",
       "blurb": "Modify Polylines such that they do not self intersect.",
@@ -338,24 +232,14 @@
       "difficulty": "NORMAL",
       "defaultPriority": "LOW",
       "highPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=motorway",
-          "highway=motorway_link",
-          "highway=trunk",
-          "highway=trunk_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
       },
       "mediumPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=primary",
-          "highway=primary_link",
-          "highway=secondary",
-          "highway=secondary_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
       },
-      "tags": "highway"
+      "tags":"highway"
     }
   },
   "SharpAngleCheck": {
@@ -367,24 +251,14 @@
       "difficulty": "NORMAL",
       "defaultPriority": "LOW",
       "highPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=motorway",
-          "highway=motorway_link",
-          "highway=trunk",
-          "highway=trunk_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
       },
       "mediumPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=primary",
-          "highway=primary_link",
-          "highway=secondary",
-          "highway=secondary_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
       },
-      "tags": "highway"
+      "tags":"highway"
     }
   },
   "SinkIslandCheck": {
@@ -396,38 +270,24 @@
       "difficulty": "EASY",
       "defaultPriority": "LOW",
       "highPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=motorway",
-          "highway=motorway_link",
-          "highway=trunk",
-          "highway=trunk_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
       },
       "mediumPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=primary",
-          "highway=primary_link",
-          "highway=secondary",
-          "highway=secondary_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
       },
-      "tags": "highway"
+      "tags":"highway"
     }
   },
   "StreetNameIntegersOnlyCheck": {
-    "name.keys.filter": [
-      "name",
-      "name:left",
-      "name:right"
-    ],
+    "name.keys.filter":["name","name:left","name:right"],
     "challenge": {
       "description": "Tasks containing name tags with only integers",
       "blurb": "Street Names Integers Only",
       "instruction": "Correct the road with only integers for names.",
       "difficulty": "Medium",
-      "tags": "highway,name"
+      "tags":"highway,name"
     }
   },
   "SnakeRoadCheck": {
@@ -438,48 +298,39 @@
       "difficulty": "MEDIUM",
       "defaultPriority": "LOW",
       "highPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=motorway",
-          "highway=motorway_link",
-          "highway=trunk",
-          "highway=trunk_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
       },
       "mediumPriorityRule": {
-        "condition": "OR",
-        "rules": [
-          "highway=primary",
-          "highway=primary_link",
-          "highway=secondary",
-          "highway=secondary_link"
-        ]
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
       },
-      "tags": "highway"
+      "tags":"highway"
     }
   },
   "SignPostCheck": {
     "linkLength": {
       "minimum.meters": 50.0
     },
-    "ramp": {
-      "max.edges": 10,
-      "filter": "highway->motorway_link,trunk_link"
+    "ramp":
+    {
+      "max.edges":10,
+      "filter":"highway->motorway_link,trunk_link"
     },
-    "source.filter": "highway->motorway,trunk",
-    "destination_tag.filter": "destination->*|destination:ref->*|destination:street->*",
-    "arterial.minimum": "RESIDENTIAL",
+    "source.filter":"highway->motorway,trunk",
+    "destination_tag.filter":"destination->*|destination:ref->*|destination:street->*",
+    "arterial.minimum":"RESIDENTIAL",
     "challenge": {
       "description": "Tasks contain nodes where sign post tagging could be missing.  In particular it looks for motorway and trunk ways which have a link edge exiting them.  A task is generated if either the connecting node is missing the motorway_junction tag or the exiting segment is missing the destination tag.",
       "blurb": "Missing sign post tags",
       "instruction": "Either add the missing motorway_junction tag to the identified node and / or the destination tag to the exiting link segment.",
       "difficulty": "NORMAL",
       "defaultPriority": "MEDIUM",
-      "tags": "highway"
+      "tags":"highway"
     }
   },
   "WaterbodyAndIslandSizeCheck": {
-    "surface": {
+    "surface":{
       "waterbody.minimum.meters": 10.0,
       "waterbody.maximum.kilometers": 370000.0,
       "island.minimum.meters": 10.0,
