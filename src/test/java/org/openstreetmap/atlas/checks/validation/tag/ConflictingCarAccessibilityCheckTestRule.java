@@ -3,6 +3,9 @@ package org.openstreetmap.atlas.checks.validation.tag;
 import org.openstreetmap.atlas.geography.atlas.Atlas;
 import org.openstreetmap.atlas.utilities.testing.CoreTestRule;
 import org.openstreetmap.atlas.utilities.testing.TestAtlas;
+import org.openstreetmap.atlas.utilities.testing.TestAtlas.Edge;
+import org.openstreetmap.atlas.utilities.testing.TestAtlas.Loc;
+import org.openstreetmap.atlas.utilities.testing.TestAtlas.Node;
 
 /**
  * {@link ConflictingCarAccessibilityCheck} test data.
@@ -25,170 +28,150 @@ public class ConflictingCarAccessibilityCheckTestRule extends CoreTestRule
     // Atlas to test car navigable edges with car access
     @TestAtlas(
             // nodes
-            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_5)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_4)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_6)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_7)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_8)), },
+            nodes = { @Node(coordinates = @Loc(value = TEST_1)),
+                    @Node(coordinates = @Loc(value = TEST_3)),
+                    @Node(coordinates = @Loc(value = TEST_5)),
+                    @Node(coordinates = @Loc(value = TEST_4)),
+                    @Node(coordinates = @Loc(value = TEST_6)),
+                    @Node(coordinates = @Loc(value = TEST_7)),
+                    @Node(coordinates = @Loc(value = TEST_8)), },
             // edges
-            edges = {
-                    @TestAtlas.Edge(coordinates = { @TestAtlas.Loc(value = TEST_1),
-                            @TestAtlas.Loc(value = TEST_3) }, tags = { "highway=ROAD", "access=yes",
-                                    "vehicle=yes" }),
-                    @TestAtlas.Edge(id = "1001000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_3), @TestAtlas.Loc(value = TEST_4),
-                            @TestAtlas.Loc(value = TEST_5) }, tags = { "highway=ROAD", "access=yes",
-                                    "motorcar=yes" }),
-                    @TestAtlas.Edge(id = "1002000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_5), @TestAtlas.Loc(value = TEST_6),
-                            @TestAtlas.Loc(value = TEST_7) }, tags = { "highway=ROAD", "access=yes",
-                                    "motor_vehicle=yes" }),
-                    @TestAtlas.Edge(id = "1008000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_3),
-                            @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
+            edges = { @Edge(id = "1006000001", coordinates = { @Loc(value = TEST_1),
+                    @Loc(value = TEST_3) }, tags = { "highway=ROAD", "access=yes", "vehicle=yes" }),
+                    @Edge(id = "1001000001", coordinates = { @Loc(value = TEST_3),
+                            @Loc(value = TEST_4), @Loc(value = TEST_5) }, tags = { "highway=ROAD",
+                                    "access=yes", "motorcar=yes" }),
+                    @Edge(id = "1002000001", coordinates = { @Loc(value = TEST_5),
+                            @Loc(value = TEST_6), @Loc(value = TEST_7) }, tags = { "highway=ROAD",
+                                    "access=yes", "motor_vehicle=yes" }),
+                    @Edge(id = "1008000001", coordinates = { @Loc(value = TEST_3),
+                            @Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
                                     "motor_vehicle=yes", "vehicle=no" }),
-                    @TestAtlas.Edge(id = "1009000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_5),
-                            @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
+                    @Edge(id = "1009000001", coordinates = { @Loc(value = TEST_5),
+                            @Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
                                     "vehicle=yes", "motorcar=yes", "motor_vehicle=no" }),
-                    @TestAtlas.Edge(id = "1001100001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_5),
-                            @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
+                    @Edge(id = "1001100001", coordinates = { @Loc(value = TEST_5),
+                            @Loc(value = TEST_8) }, tags = { "highway=ROAD", "access=yes",
                                     "vehicle=no", "motorcar=yes", "motor_vehicle=no" }), })
     private Atlas carAccessCarNavigableAtlas;
     // Atlas to test non-car navigable edges with car access
     @TestAtlas(
             // nodes
-            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_5)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_4)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_6)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_7)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_8)), },
+            nodes = { @Node(coordinates = @Loc(value = TEST_1)),
+                    @Node(coordinates = @Loc(value = TEST_3)),
+                    @Node(coordinates = @Loc(value = TEST_5)),
+                    @Node(coordinates = @Loc(value = TEST_4)),
+                    @Node(coordinates = @Loc(value = TEST_6)),
+                    @Node(coordinates = @Loc(value = TEST_7)),
+                    @Node(coordinates = @Loc(value = TEST_8)), },
             // edges
             edges = {
-                    @TestAtlas.Edge(coordinates = { @TestAtlas.Loc(value = TEST_1),
-                            @TestAtlas.Loc(value = TEST_3) }, tags = { "highway=STEPS",
-                                    "access=yes", "vehicle=yes" }),
-                    @TestAtlas.Edge(id = "1001000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_3), @TestAtlas.Loc(value = TEST_4),
-                            @TestAtlas.Loc(value = TEST_5) }, tags = { "highway=STEPS",
+                    @Edge(id = "1007000001", coordinates = { @Loc(value = TEST_1),
+                            @Loc(value = TEST_3) }, tags = { "highway=STEPS", "access=yes",
+                                    "vehicle=yes" }),
+                    @Edge(id = "1001000001", coordinates = { @Loc(value = TEST_3),
+                            @Loc(value = TEST_4), @Loc(value = TEST_5) }, tags = { "highway=STEPS",
                                     "access=yes", "motorcar=yes" }),
-                    @TestAtlas.Edge(id = "1002000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_5), @TestAtlas.Loc(value = TEST_6),
-                            @TestAtlas.Loc(value = TEST_7) }, tags = { "highway=STEPS",
+                    @Edge(id = "1002000001", coordinates = { @Loc(value = TEST_5),
+                            @Loc(value = TEST_6), @Loc(value = TEST_7) }, tags = { "highway=STEPS",
                                     "access=yes", "motor_vehicle=yes" }),
-                    @TestAtlas.Edge(id = "1008000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_3),
-                            @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=FOOTWAY",
-                                    "access=yes", "motor_vehicle=yes", "vehicle=no" }),
-                    @TestAtlas.Edge(id = "1009000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_5),
-                            @TestAtlas.Loc(value = TEST_8) }, tags = { "highway=SERVICE",
-                                    "access=yes", "vehicle=yes", "motorcar=yes", "bus=yes",
+                    @Edge(id = "1008000001", coordinates = { @Loc(value = TEST_3),
+                            @Loc(value = TEST_8) }, tags = { "highway=FOOTWAY", "access=yes",
+                                    "motor_vehicle=yes", "vehicle=no" }),
+                    @Edge(id = "1009000001", coordinates = { @Loc(value = TEST_5),
+                            @Loc(value = TEST_8) }, tags = { "highway=SERVICE", "access=yes",
+                                    "vehicle=yes", "motorcar=yes", "bus=yes",
                                     "motor_vehicle=no" }), })
     private Atlas carAccessMetricHighwayAtlas;
     // Atlas to test designated use edges that are car navigable
     @TestAtlas(
             // nodes
-            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_5)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_4)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_6)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_2)), },
+            nodes = { @Node(coordinates = @Loc(value = TEST_1)),
+                    @Node(coordinates = @Loc(value = TEST_3)),
+                    @Node(coordinates = @Loc(value = TEST_5)),
+                    @Node(coordinates = @Loc(value = TEST_4)),
+                    @Node(coordinates = @Loc(value = TEST_6)),
+                    @Node(coordinates = @Loc(value = TEST_2)), },
 
             // edges
-            edges = { @TestAtlas.Edge(id = "1000000001", coordinates = {
-                    @TestAtlas.Loc(value = TEST_1), @TestAtlas.Loc(value = TEST_2) }, tags = {
-                            "highway=MOTORWAY", "access=yes", "vehicle=no", "minibus=yes" }),
-                    @TestAtlas.Edge(id = "1001000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_3),
-                            @TestAtlas.Loc(value = TEST_4) }, tags = { "highway=ROAD", "access=yes",
+            edges = {
+                    @Edge(id = "1000000001", coordinates = { @Loc(value = TEST_1),
+                            @Loc(value = TEST_2) }, tags = { "highway=MOTORWAY", "access=yes",
+                                    "vehicle=no", "minibus=yes" }),
+                    @Edge(id = "1001000001", coordinates = { @Loc(value = TEST_3),
+                            @Loc(value = TEST_4) }, tags = { "highway=ROAD", "access=yes",
                                     "motorcar=no", "minibus=yes" }),
-                    @TestAtlas.Edge(id = "1002000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_5),
-                            @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
+                    @Edge(id = "1002000001", coordinates = { @Loc(value = TEST_5),
+                            @Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
                                     "motor_vehicle=no", "minibus=yes" }), })
     private Atlas designatedUseCarNavigableAtlas;
     // Atlas to test car navigable edges with non-car access
     @TestAtlas(
             // nodes
-            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_5)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_4)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_6)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_10)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_2)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_9)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_12)) },
+            nodes = { @Node(coordinates = @Loc(value = TEST_1)),
+                    @Node(coordinates = @Loc(value = TEST_3)),
+                    @Node(coordinates = @Loc(value = TEST_5)),
+                    @Node(coordinates = @Loc(value = TEST_4)),
+                    @Node(coordinates = @Loc(value = TEST_6)),
+                    @Node(coordinates = @Loc(value = TEST_10)),
+                    @Node(coordinates = @Loc(value = TEST_2)),
+                    @Node(coordinates = @Loc(value = TEST_9)),
+                    @Node(coordinates = @Loc(value = TEST_12)) },
 
             // edges
-            edges = { @TestAtlas.Edge(id = "1000000001", coordinates = {
-                    @TestAtlas.Loc(value = TEST_1), @TestAtlas.Loc(value = TEST_2) }, tags = {
-                            "highway=MOTORWAY", "access=yes", "vehicle=no" }),
-                    @TestAtlas.Edge(id = "1001000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_3),
-                            @TestAtlas.Loc(value = TEST_4) }, tags = { "highway=ROAD", "access=yes",
+            edges = {
+                    @Edge(id = "1000000001", coordinates = { @Loc(value = TEST_1),
+                            @Loc(value = TEST_2) }, tags = { "highway=MOTORWAY", "access=yes",
+                                    "vehicle=no" }),
+                    @Edge(id = "1001000001", coordinates = { @Loc(value = TEST_3),
+                            @Loc(value = TEST_4) }, tags = { "highway=ROAD", "access=yes",
                                     "motorcar=no" }),
-                    @TestAtlas.Edge(id = "1002000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_5),
-                            @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
+                    @Edge(id = "1002000001", coordinates = { @Loc(value = TEST_5),
+                            @Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
                                     "motor_vehicle=no" }),
-                    @TestAtlas.Edge(id = "1004000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_9),
-                            @TestAtlas.Loc(value = TEST_10) }, tags = { "highway=ROAD",
-                                    "access=yes", "motorcar=no", "vehicle=yes" }),
-                    @TestAtlas.Edge(id = "1006000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_12),
-                            @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
+                    @Edge(id = "1004000001", coordinates = { @Loc(value = TEST_9),
+                            @Loc(value = TEST_10) }, tags = { "highway=ROAD", "access=yes",
+                                    "motorcar=no", "vehicle=yes" }),
+                    @Edge(id = "1006000001", coordinates = { @Loc(value = TEST_12),
+                            @Loc(value = TEST_6) }, tags = { "highway=ROAD", "access=yes",
                                     "motor_vehicle=no", "vehicle=yes" }),
-                    @TestAtlas.Edge(id = "1007000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_12),
-                            @TestAtlas.Loc(value = TEST_9) }, tags = { "highway=ROAD", "access=yes",
+                    @Edge(id = "1007000001", coordinates = { @Loc(value = TEST_12),
+                            @Loc(value = TEST_9) }, tags = { "highway=ROAD", "access=yes",
                                     "motor_vehicle=yes", "motorcar=no" }), })
     private Atlas nonCarAccessCarNavigableAtlas;
     // Atlas to test non-car navigable edges with non-car access
     @TestAtlas(
             // nodes
-            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_5)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_4)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_6)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_10)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_2)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_9)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_12)) },
+            nodes = { @Node(coordinates = @Loc(value = TEST_1)),
+                    @Node(coordinates = @Loc(value = TEST_3)),
+                    @Node(coordinates = @Loc(value = TEST_5)),
+                    @Node(coordinates = @Loc(value = TEST_4)),
+                    @Node(coordinates = @Loc(value = TEST_6)),
+                    @Node(coordinates = @Loc(value = TEST_10)),
+                    @Node(coordinates = @Loc(value = TEST_2)),
+                    @Node(coordinates = @Loc(value = TEST_9)),
+                    @Node(coordinates = @Loc(value = TEST_12)) },
 
             // edges
-            edges = { @TestAtlas.Edge(id = "1000000001", coordinates = {
-                    @TestAtlas.Loc(value = TEST_1), @TestAtlas.Loc(value = TEST_2) }, tags = {
-                            "highway=FOOTWAY", "access=yes", "vehicle=no" }),
-                    @TestAtlas.Edge(id = "1001000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_3),
-                            @TestAtlas.Loc(value = TEST_4) }, tags = { "highway=FOOTWAY",
-                                    "access=yes", "motorcar=no" }),
-                    @TestAtlas.Edge(id = "1002000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_5),
-                            @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=FOOTWAY",
-                                    "access=yes", "motor_vehicle=no" }),
-                    @TestAtlas.Edge(id = "1004000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_9),
-                            @TestAtlas.Loc(value = TEST_10) }, tags = { "highway=CYCLEWAY",
-                                    "access=yes", "motorcar=no", "vehicle=yes" }),
-                    @TestAtlas.Edge(id = "1006000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_12),
-                            @TestAtlas.Loc(value = TEST_6) }, tags = { "highway=PATH", "access=yes",
+            edges = {
+                    @Edge(id = "1000000001", coordinates = { @Loc(value = TEST_1),
+                            @Loc(value = TEST_2) }, tags = { "highway=FOOTWAY", "access=yes",
+                                    "vehicle=no" }),
+                    @Edge(id = "1001000001", coordinates = { @Loc(value = TEST_3),
+                            @Loc(value = TEST_4) }, tags = { "highway=FOOTWAY", "access=yes",
+                                    "motorcar=no" }),
+                    @Edge(id = "1002000001", coordinates = { @Loc(value = TEST_5),
+                            @Loc(value = TEST_6) }, tags = { "highway=FOOTWAY", "access=yes",
+                                    "motor_vehicle=no" }),
+                    @Edge(id = "1004000001", coordinates = { @Loc(value = TEST_9),
+                            @Loc(value = TEST_10) }, tags = { "highway=CYCLEWAY", "access=yes",
+                                    "motorcar=no", "vehicle=yes" }),
+                    @Edge(id = "1006000001", coordinates = { @Loc(value = TEST_12),
+                            @Loc(value = TEST_6) }, tags = { "highway=PATH", "access=yes",
                                     "motor_vehicle=no", "vehicle=yes" }),
-                    @TestAtlas.Edge(id = "1007000001", coordinates = {
-                            @TestAtlas.Loc(value = TEST_12),
-                            @TestAtlas.Loc(value = TEST_9) }, tags = { "highway=PEDESTRIAN",
-                                    "access=yes", "motor_vehicle=yes", "motorcar=no" }), })
+                    @Edge(id = "1007000001", coordinates = { @Loc(value = TEST_12),
+                            @Loc(value = TEST_9) }, tags = { "highway=PEDESTRIAN", "access=yes",
+                                    "motor_vehicle=yes", "motorcar=no" }), })
     private Atlas nonCarAccessMetricHighwayAtlas;
 
     public Atlas carAccessCarNavigableAtlas()

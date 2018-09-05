@@ -106,17 +106,13 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     @Override
     protected Optional<CheckFlag> flag(final AtlasObject object)
     {
-        boolean isOverridingTag = false;
+        // Check if any one of the designated vehicle tag is present
+        final boolean isOverridingTag = this.designatedVehicleTagFilter.test(object);
         final Optional<Boolean> carAccessible = checkIfCarAccessible((Edge) object);
         // If carAccessible is empty, do not consider the object for flagging
         if (!carAccessible.isPresent())
         {
             return Optional.empty();
-        }
-        // Check if any one of the designated vehicle tag is present
-        if (this.designatedVehicleTagFilter.test(object))
-        {
-            isOverridingTag = true;
         }
         // Checks if the object has designated highway tag combined with non car access and car
         // navigable highway
