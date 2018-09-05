@@ -14,6 +14,7 @@ import org.openstreetmap.atlas.tags.MotorVehicleTag;
 import org.openstreetmap.atlas.tags.MotorcarTag;
 import org.openstreetmap.atlas.tags.VehicleTag;
 import org.openstreetmap.atlas.tags.annotations.validation.Validators;
+import org.openstreetmap.atlas.tags.filters.TaggableFilter;
 import org.openstreetmap.atlas.utilities.configuration.Configuration;
 
 /**
@@ -38,13 +39,11 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
             CAR_ACCESSIBLE_NON_CAR_NAVIGABLE_INSTRUCTION,
             CAR_ACCESSIBLE_DESIGNATED_HIGHWAY_INSTRUCTION);
     private static final String NO = "no";
-    private static final List<String> TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT = Arrays.asList("bus",
-            "minibus", "motorcycle", "taxi", "tourist_bus", "share_taxi", "psv", "goods", "hsv",
-            "agricultural", "snowmobile", "hov", "public_transportation", "emergency", "disabled",
-            "hazmat");
+    private static final String TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT = "bus->yes|minibus->yes|motorcycle->yes|taxi->yes|tourist_bus->yes|share_taxi->yes|psv->yes|good->yes|hsv->yes|"
+            + "agricultural->yes|snowmobile->yes|hov->yes|public_transportation->yes|emergency->yes|disabled->yes|hazmat->yes";
     private static final String YES = "yes";
     private static final long serialVersionUID = 8896036998080132728L;
-    private final List<String> tagsFilter;
+    private final TaggableFilter designatedVehicleTagFilter;
 
     /**
      * The default constructor that must be supplied. The Atlas Checks framework will generate the
@@ -57,8 +56,9 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     public ConflictingCarAccessibilityCheck(final Configuration configuration)
     {
         super(configuration);
-        this.tagsFilter = (List<String>) configurationValue(configuration,
-                "accessibility.overriding.tags", TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT);
+        this.designatedVehicleTagFilter = (TaggableFilter) configurationValue(configuration,
+                "accessibility.overriding.tags", TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT,
+                value -> new TaggableFilter(value.toString()));
     }
 
     /**
@@ -113,14 +113,10 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
         {
             return Optional.empty();
         }
-        // Check if any one of the designated highway tag is present
-        for (final String tagKey : object.getOsmTags().keySet())
+        // Check if any one of the designated vehicle tag is present
+        if (this.designatedVehicleTagFilter.test(object))
         {
-            if (tagsFilter.contains(tagKey) && object.getTag(tagKey).get().equalsIgnoreCase(YES))
-            {
-                isOverridingTag = true;
-                break;
-            }
+            isOverridingTag = true;
         }
         // Checks if the object has designated highway tag combined with non car access and car
         // navigable highway

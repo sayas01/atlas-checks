@@ -57,9 +57,9 @@ public class ConflictingCarAccessibilityCheckTest
     {
         this.verifier.actual(this.setup.designatedUseCarNavigableAtlas(),
                 new ConflictingCarAccessibilityCheck(ConfigurationResolver.inlineConfiguration(
-                        "{\"ConflictingCarAccessibilityCheck\":{\"accessibility.overriding.tags\":[\"bus\",\"taxi\"]}}")));
+                        "{\"ConflictingCarAccessibilityCheck\":{\"accessibility.overriding.tags\":\"minibus->yes|taxi->yes\"}}")));
         this.verifier.verify(flag -> Assert
-                .assertTrue(flag.getInstructions().contains("restrictive car access")));
+                .assertTrue(flag.getInstructions().contains("designated for specific vehicles")));
     }
 
     @Test
@@ -67,8 +67,8 @@ public class ConflictingCarAccessibilityCheckTest
     {
         this.verifier.actual(this.setup.designatedUseCarNavigableAtlas(),
                 new ConflictingCarAccessibilityCheck(ConfigurationResolver.emptyConfiguration()));
-        this.verifier.verify(flag -> Assert
-                .assertTrue(flag.getInstructions().contains("designated for specific vehicle")));
+        this.verifier.verify(flag -> Assert.assertTrue(
+                flag.getInstructions().contains("designated for specific vehicles only")));
     }
 
     @Test
