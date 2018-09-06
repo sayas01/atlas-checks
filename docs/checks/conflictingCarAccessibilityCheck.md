@@ -20,97 +20,10 @@ Our first goal is to validate the incoming Atlas object. Valid features for this
 * Does not contain any conditional tags such as `motor_vehicle:conditional`, `vehicle:conditional` or `motorcar:conditional` tags
 * Is a master edge
 * Is not an OSM way that has already been flagged
-```java
-    @Override
-  @Override
-    public boolean validCheckForObject(final AtlasObject object)
-    {
-        return object instanceof Edge
-                && !AccessTag.isNo(object)
-                && ((object.getTag(MotorVehicleTag.KEY).isPresent()
-                        && !object.getTag(MotorVehicleTag.KEY + CONDITIONAL).isPresent())
-                        || (object.getTag(MotorcarTag.KEY).isPresent()
-                                && !object.getTag(MotorcarTag.KEY + CONDITIONAL).isPresent())
-                        || (object.getTag(VehicleTag.KEY).isPresent())
-                                && !object.getTag(VehicleTag.KEY + CONDITIONAL).isPresent())
-                && ((Edge) object).isMasterEdge()
-                && Validators.isOfType(object, HighwayTag.class, HighwayTag.values())
-                && !this.isFlagged(object.getOsmIdentifier());
-    }
-```
-The valid objects are then checked for car accessibility and designated vehicle use only tags. If the object meets any of the two conditions mentioned above for a conflict to  occur and does not have a designed use tag, it will be flagged. This
-method also flags objects with specific vehicle use only tag (such tags can be given in the config file; if not specified, default set of tags in the source code would be considered) but have car navigable highway tag.
-```java
-    @Override
-    protected Optional<CheckFlag> flag(final AtlasObject object)
-    {
-        boolean isOverridingTag = false;
-        final Optional<Boolean> carAccessible = checkIfCarAccessible((Edge) object);
-        if (!carAccessible.isPresent())
-        {
-            return Optional.empty();
-        }
-        for (final String tagKey : object.getOsmTags().keySet())
-        {
-            if (tagsFilter.contains(tagKey) && object.getTag(tagKey).get().equalsIgnoreCase(YES))
-            {
-                isOverridingTag = true;
-                break;
-            }
-        }
-        if (isOverridingTag && !carAccessible.get() && HighwayTag.isCarNavigableHighway(object))
-        {
-            this.markAsFlagged(object.getOsmIdentifier());
-            return Optional.of(this.createFlag(object,
-                    this.getLocalizedInstruction(2, object.getOsmIdentifier())));
-        }
-        else if (!isOverridingTag && carAccessible.get() && HighwayTag.isMetricHighway(object)
-                && !HighwayTag.isCarNavigableHighway(object))
-        {
-            this.markAsFlagged(object.getOsmIdentifier());
-            return Optional.of(this.createFlag(object,
-                    this.getLocalizedInstruction(1, object.getOsmIdentifier())));
-        }
-        else if (!isOverridingTag && !carAccessible.get()
-                && HighwayTag.isCarNavigableHighway(object))
-        {
-            this.markAsFlagged(object.getOsmIdentifier());
-            return Optional.of(this.createFlag(object,
-                    this.getLocalizedInstruction(0, object.getOsmIdentifier())));
-        }
 
-        return Optional.empty();
-    }
-```
-The following method validates if an `AtlasObject` is car accessible or not. Car accessibility is determined by the three transportation tags -
-`MotorcarTag`,`MotorVehicleTag` and `VehicleTag`. If any one of the above is present, the tag's value will determine the car accessibility. The check for
-the tag is based on the hierarchy - `MotorcarTag` -> `MotorVehicleTag` -> `VehicleTag`.
-```java
-   private Optional<Boolean> checkIfCarAccessible(final Edge object)
-    {
-        String tagValue = null;
-        if (object.getTag(MotorcarTag.KEY).isPresent())
-        {
-            tagValue = object.getTag(MotorcarTag.KEY).get();
-        }
-        else if (object.getTag(MotorVehicleTag.KEY).isPresent())
-        {
-            tagValue = object.getTag(MotorVehicleTag.KEY).get();
-        }
-        else if (object.getTag(VehicleTag.KEY).isPresent())
-        {
-            tagValue = object.getTag(VehicleTag.KEY).get();
-        }
-        if (NO.equalsIgnoreCase(tagValue))
-        {
-            return Optional.of(false);
-        }
-        if (YES.equalsIgnoreCase(tagValue))
-        {
-            return Optional.of(true);
-        }
-        return Optional.empty();
-    }
-```
+The valid objects are then checked for car accessibility and designated vehicle tags. A helper method validates if an `AtlasObject` is car accessible or not. Car accessibility is determined by the three transportation tags - `MotorcarTag`,`MotorVehicleTag` and `VehicleTag`. If any one of the above is present, the tag's value will determine the car accessibility. The check for 
+the tag is based on the hierarchy - `MotorcarTag` -> `MotorVehicleTag` -> `VehicleTag`. If the object 
+meets any of the three conditions mentioned above for a conflict to  occur, it will be flagged. Designated vehicle tags can be given in the config file; if not specified, default set of tags in the source code will be considered for the check.
+
 To learn more about the code, please look at the comments in the source code for the check.  
 [ConflictingCarAccessibilityCheck](../../src/main/java/org/openstreetmap/atlas/checks/validation/tag/ConflictingCarAccessibilityCheck.java)
