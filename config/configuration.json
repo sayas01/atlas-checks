@@ -345,5 +345,15 @@
       "difficulty": "NORMAL",
       "defaultPriority": "MEDIUM"
     }
+  },
+  "ConflictingCarAccessibilityCheck": {
+    "accessibility.overriding.tags": "bus->yes|minibus->yes|motorcycle->yes|taxi->yes|tourist_bus->yes|share_taxi->yes|psv->yes|good->yes|hsv->yes|agricultural->yes|snowmobile->yes|hov->yes|public_transportation->yes|emergency->yes|disabled->yes|hazmat->yes",
+    "challenge": {
+      "description": "This task contains roads with conflicting highway, access and transportation tags",
+      "blurb": "Conflicting highway, access and transportation tags",
+      "instruction": "Open your favorite editor and examine if there is conflict in combination of highway tag, access tag and transportation tag.",
+      "difficulty": "NORMAL",
+      "tags": "highway"
+    }
   }
 }
