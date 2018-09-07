@@ -38,12 +38,11 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
             CAR_NAVIGABLE_RESTRICTED_ACCESS_HIGHWAY_INSTRUCTION,
             CAR_ACCESSIBLE_NON_CAR_NAVIGABLE_INSTRUCTION,
             CAR_ACCESSIBLE_DESIGNATED_HIGHWAY_INSTRUCTION);
-    private static final List<String> MODES_OF_TRANSPORTATION = Arrays
-            .asList(MotorVehicleTag.KEY, VehicleTag.KEY, MotorcarTag.KEY);
+    private static final List<String> MODES_OF_TRANSPORTATION = Arrays.asList(MotorVehicleTag.KEY,
+            VehicleTag.KEY, MotorcarTag.KEY);
     private static final String NO = "no";
-    private static final String TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT =
-            "bus->yes|minibus->yes|motorcycle->yes|taxi->yes|tourist_bus->yes|share_taxi->yes|psv->yes|good->yes|hsv->yes|"
-                    + "agricultural->yes|snowmobile->yes|hov->yes|public_transportation->yes|emergency->yes|disabled->yes|hazmat->yes";
+    private static final String TAGS_OVERRIDING_ACCESSIBILITY_DEFAULT = "bus->yes|minibus->yes|motorcycle->yes|taxi->yes|tourist_bus->yes|share_taxi->yes|psv->yes|good->yes|hsv->yes|"
+            + "agricultural->yes|snowmobile->yes|hov->yes|public_transportation->yes|emergency->yes|disabled->yes|hazmat->yes";
     private static final String YES = "yes";
     private static final long serialVersionUID = 8896036998080132728L;
     private final TaggableFilter designatedVehicleTagFilter;
@@ -53,7 +52,8 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
      * checks with this constructor, supplying a configuration that can be used to adjust any
      * parameters that the check uses during operation.
      *
-     * @param configuration the JSON configuration for this check
+     * @param configuration
+     *            the JSON configuration for this check
      */
     public ConflictingCarAccessibilityCheck(final Configuration configuration)
     {
@@ -70,7 +70,8 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
      * `MotorcarTag` or `VehicleTag` and none of these are conditional tags 5) Is a master edge 6)
      * An edge with the same OSM id has not already been flagged.
      *
-     * @param object the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
+     * @param object
+     *            the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
      * @return {@code true} if this object should be checked
      */
     @Override
@@ -80,7 +81,8 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
         return object instanceof Edge
                 // Make sure that AccessTag for the object is not "no"
                 && !AccessTag.isNo(object)
-                // Make sure that the object has either MotorVehicleTag or MotorcarTag or VehicleTag tags
+                // Make sure that the object has either MotorVehicleTag or MotorcarTag or VehicleTag
+                // tags
                 // and does not contain any conditional restrictions on these tags
                 && isNotConditionalTag(object)
                 // Make sure that only master edges are considered
@@ -94,9 +96,10 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
     /**
      * This is the actual function that will check to see whether the object needs to be flagged.
      *
-     * @param object the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
+     * @param object
+     *            the {@link AtlasObject} supplied by the Atlas-Checks framework for evaluation
      * @return an optional {@link CheckFlag} object that contains the problem object and
-     * instructions on how to fix it, or the reason the object was flagged
+     *         instructions on how to fix it, or the reason the object was flagged
      */
     @Override
     protected Optional<CheckFlag> flag(final AtlasObject object)
@@ -149,10 +152,11 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
      * the three transporation tags : {@link MotorcarTag}, {@link MotorVehicleTag} and
      * {@link VehicleTag}.
      *
-     * @param object the {@link AtlasObject} that needs to be checked for car accessibility.
+     * @param object
+     *            the {@link AtlasObject} that needs to be checked for car accessibility.
      * @return an optional {@link Boolean} to indicate if the {@link AtlasObject} is car accessible
-     * or not. If the Optional is empty, do not consider the {@link AtlasObject} for further
-     * check
+     *         or not. If the Optional is empty, do not consider the {@link AtlasObject} for further
+     *         check
      */
     private Optional<Boolean> checkIfCarAccessible(final Edge object)
     {
@@ -192,18 +196,19 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
 
     /**
      * This is a helper function that evaluates if the given {@link AtlasObject} has any of
-     * MotorVehicleTag or MotorcarTag or VehicleTag tags
-     * and does not contain any conditional restrictions on these tags
+     * MotorVehicleTag or MotorcarTag or VehicleTag tags and does not contain any conditional
+     * restrictions on these tags
      *
-     * @param object the {@link AtlasObject} that needs to be checked for conditional tag on any of MotorVehicleTag or MotorcarTag or
-     *               VehicleTag tags.
-     * @return {@code true} if any of the transportation tags is present and does not have conditional tag associated with it
+     * @param object
+     *            the {@link AtlasObject} that needs to be checked for conditional tag on any of
+     *            MotorVehicleTag or MotorcarTag or VehicleTag tags.
+     * @return {@code true} if any of the transportation tags is present and does not have
+     *         conditional tag associated with it
      */
     private boolean isNotConditionalTag(final AtlasObject object)
     {
-        return MODES_OF_TRANSPORTATION
-                .stream().anyMatch(tagKey -> object.getTag(tagKey).isPresent()
-                        && !object.getTag(tagKey + CONDITIONAL).isPresent());
+        return MODES_OF_TRANSPORTATION.stream().anyMatch(tagKey -> object.getTag(tagKey).isPresent()
+                && !object.getTag(tagKey + CONDITIONAL).isPresent());
     }
 
 }
