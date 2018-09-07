@@ -210,5 +210,4 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
         return MODES_OF_TRANSPORTATION.stream().anyMatch(tagKey -> object.getTag(tagKey).isPresent()
                 && !object.getTag(tagKey + CONDITIONAL).isPresent());
     }
-
 }
