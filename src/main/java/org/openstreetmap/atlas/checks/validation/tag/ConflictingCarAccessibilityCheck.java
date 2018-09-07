@@ -82,7 +82,6 @@ public class ConflictingCarAccessibilityCheck extends BaseCheck
                 // Make sure that AccessTag for the object is not "no"
                 && !AccessTag.isNo(object)
                 // Make sure that the object has either MotorVehicleTag or MotorcarTag or VehicleTag
-                // tags
                 // and does not contain any conditional restrictions on these tags
                 && isNotConditionalTag(object)
                 // Make sure that only master edges are considered
