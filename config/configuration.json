@@ -171,6 +171,8 @@
       "difficulty": "MEDIUM"
     }
   },
+  "MalformedPolyLineCheck" : {
+  },
   "OneMemberRelationCheck": {
     "challenge": {
       "description": "Tasks containing relations with only one member.",
