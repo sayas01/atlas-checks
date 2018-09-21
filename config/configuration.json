@@ -171,7 +171,22 @@
       "difficulty": "MEDIUM"
     }
   },
-  "MalformedPolyLineCheck" : {
+  "MalformedPolyLineCheck": {
+    "challenge": {
+      "description": "Tasks containing lines that have only one point, or none, and the ones that are too long or too short. A line is considered too long if it is longer than 100km and too short if is shorter than 1m. Coastlines and Rivers are excluded.",
+      "blurb": "Polylines that are malformed.",
+      "instruction": "Open your favorite editor, remove unnecessary nodes if required. Split way into multiple ways so that the way is not too long, or increase the length of a way if it is less than 1m.",
+      "difficulty": "NORMAL",
+      "defaultPriority": "LOW",
+      "highPriorityRule": {
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
+      },
+      "mediumPriorityRule": {
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
+      }
+    }
   },
   "OneMemberRelationCheck": {
     "challenge": {
