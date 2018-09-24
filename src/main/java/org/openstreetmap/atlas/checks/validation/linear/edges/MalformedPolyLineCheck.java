@@ -82,8 +82,13 @@ public class MalformedPolyLineCheck extends BaseCheck<Long>
         return FALLBACK_INSTRUCTIONS;
     }
 
-    // Coastlines and rivers should be excluded from the check, as they can be
-    // irregular and long, but still valid polylines.
+    /**
+     * Coastlines and rivers should be excluded from the check, as they can be
+     * irregular and long, but still valid polylines. This method checks if a polyline is part of
+     * river or coastline.
+     * @param tags
+     * @return {@code true} if this object is meets the criteria for a complex polyline
+     */
     private boolean isComplexPolyLine(final Map<String, String> tags)
     {
         return NaturalTag.COASTLINE.name().equalsIgnoreCase(tags.get(NaturalTag.KEY))
@@ -103,7 +108,7 @@ public class MalformedPolyLineCheck extends BaseCheck<Long>
      * Checks if {@link LineItem} is part of relation having WaterTag associated with it
      * 
      * @param line
-     * @return true if the LineItem is part of relation with WaterTag
+     * @return {@code true} if the LineItem is part of relation with WaterTag
      */
     private boolean isMemberOfRelationWithWaterTag(final LineItem line)
     {
