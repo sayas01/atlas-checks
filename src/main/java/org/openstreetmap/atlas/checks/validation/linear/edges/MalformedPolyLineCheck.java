@@ -91,15 +91,17 @@ public class MalformedPolyLineCheck extends BaseCheck<Long>
      */
     private boolean isComplexPolyLine(final Map<String, String> tags)
     {
-        return NaturalTag.COASTLINE.name().equalsIgnoreCase(tags.get(NaturalTag.KEY))
+        final String naturalTagValue = tags.get(NaturalTag.KEY);
+        final String waterwayTagValue = tags.get(WaterwayTag.KEY);
+        return NaturalTag.COASTLINE.name().equalsIgnoreCase(naturalTagValue)
                 // waterway=river
-                || WaterwayTag.RIVER.name().equalsIgnoreCase(tags.get(WaterwayTag.KEY))
+                || WaterwayTag.RIVER.name().equalsIgnoreCase(waterwayTagValue)
                 // waterway=riverbank
-                || WaterwayTag.RIVERBANK.name().equalsIgnoreCase(tags.get(WaterwayTag.KEY))
+                || WaterwayTag.RIVERBANK.name().equalsIgnoreCase(waterwayTagValue)
                 // waterway=stream
-                || WaterwayTag.STREAM.name().equalsIgnoreCase(tags.get(WaterwayTag.KEY))
+                || WaterwayTag.STREAM.name().equalsIgnoreCase(waterwayTagValue)
                 // natural=water
-                || NaturalTag.WATER.name().equalsIgnoreCase(tags.get(NaturalTag.KEY))
+                || NaturalTag.WATER.name().equalsIgnoreCase(naturalTagValue)
                         // water=river
                         && WaterTag.RIVER.name().equalsIgnoreCase(tags.get(WaterTag.KEY));
     }
