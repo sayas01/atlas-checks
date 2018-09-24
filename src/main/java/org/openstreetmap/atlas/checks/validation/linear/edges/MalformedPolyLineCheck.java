@@ -83,9 +83,9 @@ public class MalformedPolyLineCheck extends BaseCheck<Long>
     }
 
     /**
-     * Coastlines and rivers should be excluded from the check, as they can be
-     * irregular and long, but still valid polylines. This method checks if a polyline is part of
-     * river or coastline.
+     * Coastlines and rivers should be excluded from the check, as they can be irregular and long,
+     * but still valid polylines. This method checks if a polyline is part of river or coastline.
+     * 
      * @param tags
      * @return {@code true} if this object is meets the criteria for a complex polyline
      */
