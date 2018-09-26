@@ -31,9 +31,11 @@ public class MalformedPolyLineCheck extends BaseCheck<Long>
     private static final String MAX_LENGTH_INSTRUCTION = "Line is {0}, which is longer than the maximum of {1}";
     private static final String MAX_POINTS_INSTRUCTION = "Line contains {0} points more than maximum of {1}";
     private static final String SHORT_LENGTH_INSTRUCTION = "Line is {0}, which is shorter than the minimum of {1}";
+    private static final String MAX_POINTS_MAX_LENGTH_INSTRUCTION = "Line contains {0} points more than maximum of {1} and line is {2}, which is longer than the maximum of {3}";
     private static final List<String> FALLBACK_INSTRUCTIONS = Arrays.asList(MAX_POINTS_INSTRUCTION,
-            MAX_LENGTH_INSTRUCTION, SHORT_LENGTH_INSTRUCTION);
+            MAX_LENGTH_INSTRUCTION, SHORT_LENGTH_INSTRUCTION, MAX_POINTS_MAX_LENGTH_INSTRUCTION);
     private static final long serialVersionUID = -6190296606600063334L;
+    private static final int THREE = 3;
 
     public MalformedPolyLineCheck(final Configuration configuration)
     {
@@ -43,7 +45,8 @@ public class MalformedPolyLineCheck extends BaseCheck<Long>
     @Override
     public boolean validCheckForObject(final AtlasObject object)
     {
-        return object instanceof Edge || object instanceof Line;
+        return (object instanceof Edge && ((Edge) object).isMasterEdge() || object instanceof Line)
+                && !this.isFlagged(object.getOsmIdentifier());
     }
 
     @Override
@@ -52,17 +55,22 @@ public class MalformedPolyLineCheck extends BaseCheck<Long>
         final LineItem line = (LineItem) object;
         final Map<String, String> tags = line.getTags();
         final int numberPoints = Iterables.asList(line.getRawGeometry()).size();
+        final Distance length = line.asPolyLine().length();
         // We exclude certain complex PolyLines from the check.
         if (isComplexPolyLine(tags) || isMemberOfRelationWithWaterTag(line))
         {
             return Optional.empty();
+        }
+        if (numberPoints > MAXIMUM_POINTS && length.isGreaterThan(MAXIMUM_LENGTH))
+        {
+            return Optional.of(createFlag(object, this.getLocalizedInstruction(THREE, numberPoints,
+                    MAXIMUM_POINTS, length, MAXIMUM_LENGTH)));
         }
         if (numberPoints < 1 || numberPoints > MAXIMUM_POINTS)
         {
             return Optional.of(createFlag(object,
                     this.getLocalizedInstruction(0, numberPoints, MAXIMUM_POINTS)));
         }
-        final Distance length = line.asPolyLine().length();
         if (length.isGreaterThan(MAXIMUM_LENGTH))
         {
             return Optional.of(
