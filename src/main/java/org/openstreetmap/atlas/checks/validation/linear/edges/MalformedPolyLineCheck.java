@@ -109,6 +109,8 @@ public class MalformedPolyLineCheck extends BaseCheck<Long>
                 || WaterwayTag.RIVERBANK.name().equalsIgnoreCase(waterwayTagValue)
                 // waterway=stream
                 || WaterwayTag.STREAM.name().equalsIgnoreCase(waterwayTagValue)
+                // waterway=canal
+                || WaterwayTag.CANAL.name().equalsIgnoreCase(waterwayTagValue)
                 // natural=water
                 || NaturalTag.WATER.name().equalsIgnoreCase(naturalTagValue)
                         // water=river
