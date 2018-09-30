@@ -22,8 +22,7 @@ public class MalformedPolyLineCheckTestRule extends CoreTestRule
             // nodes
             nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
                     @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_5)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_7)) },
+                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_4)) },
             // lines
             lines = {
                     @TestAtlas.Line(id = "1000000001", coordinates = {
@@ -34,9 +33,10 @@ public class MalformedPolyLineCheckTestRule extends CoreTestRule
     private Atlas singlePointPolyLineAtlas;
     @TestAtlas(
             // nodes
-            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
+            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
+                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_4)),
                     @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_5)),
+                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_6)),
                     @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_7)) },
             // lines
             lines = {
@@ -49,9 +49,10 @@ public class MalformedPolyLineCheckTestRule extends CoreTestRule
     private Atlas maxLengthPolyLineAtlas;
     @TestAtlas(
             // nodes
-            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_1)),
-                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
+            nodes = { @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_3)),
+                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_4)),
                     @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_5)),
+                    @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_6)),
                     @TestAtlas.Node(coordinates = @TestAtlas.Loc(value = TEST_7)) },
             // lines
             lines = {

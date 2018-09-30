@@ -16,7 +16,6 @@ public class MalformedPolyLineCheckTest
 {
     @Rule
     public MalformedPolyLineCheckTestRule setup = new MalformedPolyLineCheckTestRule();
-
     @Rule
     public ConsumerBasedExpectedCheckVerifier verifier = new ConsumerBasedExpectedCheckVerifier();
     private final Configuration configuration = ConfigurationResolver.emptyConfiguration();
