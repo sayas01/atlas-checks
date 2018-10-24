@@ -46,7 +46,6 @@ public class FlaggedRelation extends FlaggedObject
     @Override
     public Iterable<Location> getGeometry()
     {
-
         final List<Location> listOfLocation = new ArrayList<>();
 
         final Set<AtlasObject> flattenedMembers = this.flatten();
@@ -85,7 +84,6 @@ public class FlaggedRelation extends FlaggedObject
         }
         final PolyLine polyLine = new PolyLine(listOfLocation);
         return polyLine;
-
     }
 
     /**
@@ -125,6 +123,10 @@ public class FlaggedRelation extends FlaggedObject
         return relationMembers;
     }
 
+    /**
+     * Get flattened RelationMemberList
+     * @return {@link RelationMemberList}
+     */
     public RelationMemberList getflattenedRelationMembers()
     {
 
@@ -179,7 +181,7 @@ public class FlaggedRelation extends FlaggedObject
         final Map<String, String> tags = relation.getTags();
         tags.put(ITEM_IDENTIFIER_TAG, relation.getIdentifier() + "");
         tags.put(OSM_IDENTIFIER_TAG, relation.getOsmIdentifier() + "");
-        tags.put(ITEM_TYPE_TAG, relation.getType().toString());
+        tags.put(ITEM_TYPE_TAG, "Relation");
         return tags;
     }
 }

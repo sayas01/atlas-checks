@@ -5,11 +5,10 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -55,7 +54,6 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
     private final List<String> instructions = new ArrayList<>();
     private final Set<FlaggedObject> flaggedObjects = new HashSet<>();
     private final Set<FlaggedRelation> flaggedRelations = new HashSet<>();
-    private final Set<FlaggedObject> flaggedMembers = new HashSet<>();
 
     /**
      * A basic constructor that simply flags some identifying value
@@ -152,13 +150,10 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
                 this.flaggedObjects.add(new FlaggedPolyline(object));
             }
         }
-
-        // If object is instance of relation, then add the relation to the class variable and add
-        // all its members to the flaggedObjects.
+        // If object is instance of relation, then add the relation to flaggedRelations set
         if (object instanceof Relation)
         {
-            final Relation parentRelation = (Relation) object;
-            this.flaggedRelations.add(new FlaggedRelation(parentRelation));
+            this.flaggedRelations.add(new FlaggedRelation((Relation) object));
         }
     }
 
@@ -252,7 +247,8 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
         return Objects.equals(this.identifier, otherFlag.identifier)
                 && Objects.equals(this.challengeName, otherFlag.challengeName)
                 && Objects.equals(this.instructions, otherFlag.instructions)
-                && Objects.equals(this.flaggedObjects, otherFlag.flaggedObjects);
+                && Objects.equals(this.flaggedObjects, otherFlag.flaggedObjects)
+                && Objects.equals(this.flaggedRelations, otherFlag.flaggedRelations);
     }
 
     /**
@@ -332,49 +328,54 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
      */
     public List<GeoJsonBuilder.LocationIterableProperties> getLocationIterableProperties()
     {
-        final List<GeoJsonBuilder.LocationIterableProperties> locList = new ArrayList<>();
+        final List<GeoJsonBuilder.LocationIterableProperties> locationIterablePropertyList = new ArrayList<>();
+        // If flagged object is relation
         if (this.flaggedRelations.size() > 0)
         {
-            final FlaggedRelation next = this.flaggedRelations.iterator().next();
-            final RelationMemberList relationMembers = next.getflattenedRelationMembers();
-            final RelationMemberList members = next.members();
-            for (final RelationMember relationMember : relationMembers)
+            final Iterator<FlaggedRelation> iterator = this.flaggedRelations.iterator();
+            while(iterator.hasNext())
             {
-                final Long memberOsmID = relationMember.getEntity().getOsmIdentifier();
-                final AtlasEntity entity = relationMember.getEntity();
-                if (entity instanceof LocationItem)
+                final FlaggedRelation next = iterator.next();
+                // Get flattened members of relation
+                final RelationMemberList relationMembers = next.getflattenedRelationMembers();
+                for (final RelationMember relationMember : relationMembers)
                 {
-                    // flaggedMembers.add(memberOsmID);
-                    final FlaggedPoint point = new FlaggedPoint((LocationItem) entity);
-                    point.getProperties().put("role", relationMember.getRole());
-                    point.getProperties().put("part of",
-                            relationMember.getRelationIdentifier() + "");
-                    locList.add(new GeoJsonBuilder.LocationIterableProperties(point.getGeometry(),
-                            point.getProperties()));
-                }
-                else
-                {
-                    if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
+                    final AtlasEntity entity = relationMember.getEntity();
+                    if (entity instanceof LocationItem)
                     {
-                        // flaggedMembers.add(memberOsmID);
-                        final FlaggedPolyline polyline = new FlaggedPolyline(entity);
-                        polyline.getProperties().put("role", relationMember.getRole());
-                        polyline.getProperties().put("part of",
+                        final FlaggedPoint flaggedPoint = new FlaggedPoint((LocationItem) entity);
+                        final Map<String, String> flaggedPointProperties = flaggedPoint.getProperties();
+                        // Add member role and relation identifier to the property map
+                        flaggedPointProperties.put("role", relationMember.getRole());
+                        flaggedPointProperties.put("part of",
                                 relationMember.getRelationIdentifier() + "");
-                        locList.add(new GeoJsonBuilder.LocationIterableProperties(
-                                polyline.getGeometry(), polyline.getProperties()));
+                        locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(flaggedPoint.getGeometry(),
+                                flaggedPointProperties));
+                    }
+                    else
+                    {
+                        // Consider only master edges
+                        if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
+                        {
+                            final FlaggedPolyline flaggedPolyline = new FlaggedPolyline(entity);
+                            final Map<String, String> flaggedPolylineProperties = flaggedPolyline.getProperties();
+                            // Add member role and relation identifier to the property map
+                            flaggedPolylineProperties.put("role", relationMember.getRole());
+                            flaggedPolylineProperties.put("part of",
+                                    relationMember.getRelationIdentifier() + "");
+                            locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(
+                                    flaggedPolyline.getGeometry(), flaggedPolylineProperties));
+                        }
                     }
                 }
             }
-
-            return locList;
+            return locationIterablePropertyList;
         }
         return this.flaggedObjects.stream()
                 .map(flaggedObject -> new GeoJsonBuilder.LocationIterableProperties(
                         flaggedObject.getGeometry(), flaggedObject.getProperties()))
                 .collect(Collectors.toList());
     }
-
 
     /**
      * Builds a MapRouletted {@link Task} from this {@link CheckFlag}
