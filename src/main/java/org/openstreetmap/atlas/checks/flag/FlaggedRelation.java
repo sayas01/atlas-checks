@@ -56,7 +56,6 @@ public class FlaggedRelation extends FlaggedObject
             {
                 return ((LocationItem) object).getLocation();
             }
-
         }
         for (final AtlasObject member : flattenedMembers)
         {
@@ -125,16 +124,17 @@ public class FlaggedRelation extends FlaggedObject
 
     /**
      * Get flattened RelationMemberList
+     * 
      * @return {@link RelationMemberList}
      */
     public RelationMemberList getflattenedRelationMembers()
     {
 
-        final List<RelationMember> listOfMembers=new ArrayList<>();
+        final List<RelationMember> listOfMembers = new ArrayList<>();
         final Deque<RelationMember> toProcess = new LinkedList<>();
         final Set<Long> relationsSeen = new HashSet<>();
         RelationMember polledMember;
-        this.relation.members().forEach(member->toProcess.add(member));
+        this.relation.members().forEach(member -> toProcess.add(member));
         while (!toProcess.isEmpty())
         {
             polledMember = toProcess.poll();

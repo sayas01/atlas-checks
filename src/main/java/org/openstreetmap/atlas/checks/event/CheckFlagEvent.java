@@ -69,11 +69,13 @@ public final class CheckFlagEvent extends Event
         final JsonArray featureProperties = new JsonArray();
         final Set<JsonElement> featureOsmIds = new HashSet<>();
 
-        if(!flag.getFlaggedRelations().isEmpty())
+        if (!flag.getFlaggedRelations().isEmpty())
         {
-            populateFlaggedRelationProperties(flag,flagProperties,geometries, featureOsmIds, featureProperties);
+            populateFlaggedRelationProperties(flag, flagProperties, geometries, featureOsmIds,
+                    featureProperties);
         }
-        else{
+        else
+        {
             populateFlaggedObjectProperties(geometries, featureOsmIds, featureProperties);
             flagProperties.addProperty("feature_count", geometries.size());
         }
@@ -97,62 +99,61 @@ public final class CheckFlagEvent extends Event
 
     /**
      * Populates properties of flaggedRelations
+     * 
      * @param flag
      * @param flagProperties
      * @param geometries
      * @param featureOsmIds
      * @param featureProperties
      */
-    private static void populateFlaggedRelationProperties(final CheckFlag flag, final JsonObject flagProperties,
-            final List<LocationIterableProperties> geometries, final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
+    private static void populateFlaggedRelationProperties(final CheckFlag flag,
+            final JsonObject flagProperties, final List<LocationIterableProperties> geometries,
+            final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
     {
         final Iterator<FlaggedRelation> iterator = flag.getFlaggedRelations().iterator();
         final Set<Long> flaggedMemberOSMIds = new HashSet<>();
         final JsonObject relationProperties = new JsonObject();
 
-        while(iterator.hasNext())
+        while (iterator.hasNext())
         {
             final FlaggedRelation next = iterator.next();
             // Populate relation properties
             next.getProperties().forEach(relationProperties::addProperty);
             // Get all members that are relations
-            final List<RelationMember> memberRelationList = next.members()
-                    .stream().filter(member -> member.getEntity()
-                            instanceof Relation).collect(Collectors.toList());
-
-//            next.members()
-//                    .stream().filter(member -> member.getEntity()
-//                    instanceof Relation).collect(Collectors.toList()).stream().map(relationMember -> new FlaggedRelation((Relation)
-//                    relationMember.getEntity()).getProperties()).map(eachmap->)
-
+            final List<RelationMember> memberRelationList = next.members().stream()
+                    .filter(member -> member.getEntity() instanceof Relation)
+                    .collect(Collectors.toList());
             // Get properties of member relations
             final Iterator<Map<String, String>> propertyMapIterator = memberRelationList.stream()
-                    .map(relationMember -> new FlaggedRelation((Relation)
-                            relationMember.getEntity()).getProperties())
+                    .map(relationMember -> new FlaggedRelation(
+                            (Relation) relationMember.getEntity()).getProperties())
                     .collect(Collectors.toList()).iterator();
             // Populate member relation properties
-            while(propertyMapIterator.hasNext())
+            while (propertyMapIterator.hasNext())
             {
                 propertyMapIterator.next().forEach(relationProperties::addProperty);
             }
             // Set of relation member OSM IDs
             final Set<Long> relationMemberOsmIds = next.members().stream()
-                    .map(member -> member.getEntity()
-                            .getOsmIdentifier()).collect(Collectors.toSet());
+                    .map(member -> member.getEntity().getOsmIdentifier())
+                    .collect(Collectors.toSet());
             // Populate properties of members
-            geometries.stream().forEach(
-                    geometry -> Optional.ofNullable(geometry.getProperties()).ifPresent(propertyMap ->
+            geometries.stream().forEach(geometry -> Optional.ofNullable(geometry.getProperties())
+                    .ifPresent(propertyMap ->
                     {
                         final String osmid = propertyMap.get("osmid");
                         // Fore each geometry, add properties for only the members of the relation.
-                        // This ensures that the same properties of way sectioned edges are not duplicated
+                        // This ensures that the same properties of way sectioned edges are not
+                        // duplicated
                         // Also add properties of only relation members and not flattened members
-                        if (!flaggedMemberOSMIds.contains(Long.parseLong(osmid)) && relationMemberOsmIds.contains(Long.parseLong(osmid)))
+                        if (!flaggedMemberOSMIds.contains(Long.parseLong(osmid))
+                                && relationMemberOsmIds.contains(Long.parseLong(osmid)))
                         {
                             final JsonObject properties = new JsonObject();
                             propertyMap.forEach(properties::addProperty);
                             featureProperties.add(properties);
-                            Optional.ofNullable(properties.get("osmid")).ifPresent(featureOsmIds::add);
+                            Optional.ofNullable(properties.get("osmid"))
+                                    .ifPresent(featureOsmIds::add);
                             flaggedMemberOSMIds.add(Long.parseLong(osmid));
                         }
                     }));
@@ -169,7 +170,9 @@ public final class CheckFlagEvent extends Event
      * @param featureOsmIds
      * @param featureProperties
      */
-    private static void populateFlaggedObjectProperties(final List<LocationIterableProperties> geometries, final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
+    private static void populateFlaggedObjectProperties(
+            final List<LocationIterableProperties> geometries, final Set<JsonElement> featureOsmIds,
+            final JsonArray featureProperties)
     {
         geometries.stream().forEach(
                 geometry -> Optional.ofNullable(geometry.getProperties()).ifPresent(propertyMap ->

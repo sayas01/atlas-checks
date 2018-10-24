@@ -328,53 +328,64 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
      */
     public List<GeoJsonBuilder.LocationIterableProperties> getLocationIterableProperties()
     {
-        final List<GeoJsonBuilder.LocationIterableProperties> locationIterablePropertyList = new ArrayList<>();
         // If flagged object is relation
         if (this.flaggedRelations.size() > 0)
         {
-            final Iterator<FlaggedRelation> iterator = this.flaggedRelations.iterator();
-            while(iterator.hasNext())
-            {
-                final FlaggedRelation next = iterator.next();
-                // Get flattened members of relation
-                final RelationMemberList relationMembers = next.getflattenedRelationMembers();
-                for (final RelationMember relationMember : relationMembers)
-                {
-                    final AtlasEntity entity = relationMember.getEntity();
-                    if (entity instanceof LocationItem)
-                    {
-                        final FlaggedPoint flaggedPoint = new FlaggedPoint((LocationItem) entity);
-                        final Map<String, String> flaggedPointProperties = flaggedPoint.getProperties();
-                        // Add member role and relation identifier to the property map
-                        flaggedPointProperties.put("role", relationMember.getRole());
-                        flaggedPointProperties.put("part of",
-                                relationMember.getRelationIdentifier() + "");
-                        locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(flaggedPoint.getGeometry(),
-                                flaggedPointProperties));
-                    }
-                    else
-                    {
-                        // Consider only master edges
-                        if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
-                        {
-                            final FlaggedPolyline flaggedPolyline = new FlaggedPolyline(entity);
-                            final Map<String, String> flaggedPolylineProperties = flaggedPolyline.getProperties();
-                            // Add member role and relation identifier to the property map
-                            flaggedPolylineProperties.put("role", relationMember.getRole());
-                            flaggedPolylineProperties.put("part of",
-                                    relationMember.getRelationIdentifier() + "");
-                            locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(
-                                    flaggedPolyline.getGeometry(), flaggedPolylineProperties));
-                        }
-                    }
-                }
-            }
-            return locationIterablePropertyList;
+            return getListOfGeoJsonObjectsForFlaggedRelation();
         }
         return this.flaggedObjects.stream()
                 .map(flaggedObject -> new GeoJsonBuilder.LocationIterableProperties(
                         flaggedObject.getGeometry(), flaggedObject.getProperties()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * @return a list of {@link GeoJsonBuilder.LocationIterableProperties} representing all flagged
+     *         geometries of FlaggedRelation
+     */
+    public List<GeoJsonBuilder.LocationIterableProperties> getListOfGeoJsonObjectsForFlaggedRelation()
+    {
+        final List<GeoJsonBuilder.LocationIterableProperties> locationIterablePropertyList = new ArrayList<>();
+        final Iterator<FlaggedRelation> iterator = this.flaggedRelations.iterator();
+        while (iterator.hasNext())
+        {
+            final FlaggedRelation next = iterator.next();
+            // Get flattened members of relation
+            final RelationMemberList relationMembers = next.getflattenedRelationMembers();
+            for (final RelationMember relationMember : relationMembers)
+            {
+                final AtlasEntity entity = relationMember.getEntity();
+                if (entity instanceof LocationItem)
+                {
+                    final FlaggedPoint flaggedPoint = new FlaggedPoint((LocationItem) entity);
+                    final Map<String, String> flaggedPointProperties = flaggedPoint.getProperties();
+                    // Add member role and relation identifier to the property map
+                    flaggedPointProperties.put("role", relationMember.getRole());
+                    flaggedPointProperties.put("part of",
+                            relationMember.getRelationIdentifier() + "");
+                    locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(
+                            flaggedPoint.getGeometry(), flaggedPointProperties));
+                }
+                else
+                {
+                    // Consider only master edges
+                    if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
+                    {
+                        final FlaggedPolyline flaggedPolyline = new FlaggedPolyline(entity);
+                        final Map<String, String> flaggedPolylineProperties = flaggedPolyline
+                                .getProperties();
+                        // Add member role and relation identifier to the property map
+                        flaggedPolylineProperties.put("role", relationMember.getRole());
+                        flaggedPolylineProperties.put("part of",
+                                relationMember.getRelationIdentifier() + "");
+                        locationIterablePropertyList
+                                .add(new GeoJsonBuilder.LocationIterableProperties(
+                                        flaggedPolyline.getGeometry(), flaggedPolylineProperties));
+                    }
+                }
+            }
+        }
+        return locationIterablePropertyList;
     }
 
     /**
