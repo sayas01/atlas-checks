@@ -129,7 +129,6 @@ public class FlaggedRelation extends FlaggedObject
      */
     public RelationMemberList getflattenedRelationMembers()
     {
-
         final List<RelationMember> listOfMembers = new ArrayList<>();
         final Deque<RelationMember> toProcess = new LinkedList<>();
         final Set<Long> relationsSeen = new HashSet<>();
@@ -138,12 +137,8 @@ public class FlaggedRelation extends FlaggedObject
         while (!toProcess.isEmpty())
         {
             polledMember = toProcess.poll();
-            if (polledMember.getEntity() instanceof Relation)
+            if (polledMember.getEntity() instanceof Relation && !relationsSeen.contains(polledMember.getEntity().getIdentifier()))
             {
-                if (relationsSeen.contains(polledMember.getEntity().getIdentifier()))
-                {
-                    continue;
-                }
                 ((Relation) polledMember.getEntity()).members()
                         .forEach(member -> toProcess.add(member));
                 relationsSeen.add(polledMember.getEntity().getIdentifier());

@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -355,33 +356,33 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
             for (final RelationMember relationMember : relationMembers)
             {
                 final AtlasEntity entity = relationMember.getEntity();
+                Map<String, String> flaggedObjectProperties = new HashMap<>();
+                FlaggedObject flaggedObject = null;
+
                 if (entity instanceof LocationItem)
                 {
                     final FlaggedPoint flaggedPoint = new FlaggedPoint((LocationItem) entity);
-                    final Map<String, String> flaggedPointProperties = flaggedPoint.getProperties();
-                    // Add member role and relation identifier to the property map
-                    flaggedPointProperties.put("role", relationMember.getRole());
-                    flaggedPointProperties.put("part of",
-                            relationMember.getRelationIdentifier() + "");
-                    locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(
-                            flaggedPoint.getGeometry(), flaggedPointProperties));
+                    flaggedObjectProperties=flaggedPoint.getProperties();
+                    flaggedObject=flaggedPoint;
                 }
-                else
+                // If edge, consider only the master edges
+                else if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
                 {
                     // Consider only master edges
                     if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
                     {
                         final FlaggedPolyline flaggedPolyline = new FlaggedPolyline(entity);
-                        final Map<String, String> flaggedPolylineProperties = flaggedPolyline
-                                .getProperties();
-                        // Add member role and relation identifier to the property map
-                        flaggedPolylineProperties.put("role", relationMember.getRole());
-                        flaggedPolylineProperties.put("part of",
-                                relationMember.getRelationIdentifier() + "");
-                        locationIterablePropertyList
-                                .add(new GeoJsonBuilder.LocationIterableProperties(
-                                        flaggedPolyline.getGeometry(), flaggedPolylineProperties));
+                        flaggedObject=flaggedPolyline;
+                        flaggedObjectProperties=flaggedPolyline.getProperties();
                     }
+                }
+                if(flaggedObject!=null)
+                {
+                    // Add member role and relation identifier to the property map
+                    flaggedObjectProperties.put("role", relationMember.getRole());
+                    flaggedObjectProperties.put("part of", relationMember.getRelationIdentifier() + "");
+                    locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(
+                            flaggedObject.getGeometry(), flaggedObjectProperties));
                 }
             }
         }
