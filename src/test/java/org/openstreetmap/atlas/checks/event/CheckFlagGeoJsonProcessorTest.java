@@ -92,7 +92,6 @@ public class CheckFlagGeoJsonProcessorTest
                 actualEventCount += found.getAsJsonArray("features").size();
             }
         }
-
         Assert.assertEquals(eventCount, actualEventCount);
 
         // Cleanup

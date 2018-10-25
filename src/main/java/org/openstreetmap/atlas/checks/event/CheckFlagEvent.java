@@ -13,7 +13,6 @@ import org.openstreetmap.atlas.checks.base.Check;
 import org.openstreetmap.atlas.checks.flag.CheckFlag;
 import org.openstreetmap.atlas.checks.flag.FlaggedRelation;
 import org.openstreetmap.atlas.geography.atlas.items.Relation;
-import org.openstreetmap.atlas.geography.atlas.items.RelationMember;
 import org.openstreetmap.atlas.geography.geojson.GeoJsonBuilder;
 import org.openstreetmap.atlas.geography.geojson.GeoJsonBuilder.LocationIterableProperties;
 import org.openstreetmap.atlas.geography.geojson.GeoJsonObject;
@@ -111,29 +110,30 @@ public final class CheckFlagEvent extends Event
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
     {
         final Iterator<FlaggedRelation> iterator = flag.getFlaggedRelations().iterator();
-        final Set<Long> flaggedMemberOSMIds = new HashSet<>();
         final JsonObject relationProperties = new JsonObject();
 
         while (iterator.hasNext())
         {
+            final Set<Long> flaggedMemberOSMIds = new HashSet<>();
             final FlaggedRelation next = iterator.next();
             // Populate flagged relation properties
             next.getProperties().forEach(relationProperties::addProperty);
-            // If the flagged relations have relations as members, then add the properties of the member relations as well.
+            // If the flagged relations have relations as members, then add the properties of the
+            // member relations as well.
             // Get all members of the relation that are relations
-            next.members().stream()
-                    .filter(member -> member.getEntity() instanceof Relation)
+            next.members().stream().filter(member -> member.getEntity() instanceof Relation)
                     // Get properties of the member relation
                     .map(relationMember -> new FlaggedRelation(
-                    (Relation) relationMember.getEntity()).getProperties())
+                            (Relation) relationMember.getEntity()).getProperties())
                     // Populate the properties of the member relations
-                    .forEach(map->map.forEach(relationProperties::addProperty));
+                    .forEach(map -> map.forEach(relationProperties::addProperty));
             // Set of relation member OSM IDs
             final Set<Long> relationMemberOsmIds = next.members().stream()
                     .map(member -> member.getEntity().getOsmIdentifier())
                     .collect(Collectors.toSet());
             // Populate properties of members
-            populateMemberProperties(geometries,featureOsmIds,featureProperties,flaggedMemberOSMIds,relationMemberOsmIds);
+            populateMemberProperties(geometries, featureOsmIds, featureProperties,
+                    flaggedMemberOSMIds, relationMemberOsmIds);
         }
         featureProperties.add(relationProperties);
         flagProperties.addProperty("feature_count", featureProperties.size());
@@ -170,11 +170,12 @@ public final class CheckFlagEvent extends Event
      * @param relationMemberOsmIds
      * @param flaggedMemberOSMIds
      */
-    private static void populateMemberProperties(final List<LocationIterableProperties> geometries, final Set<JsonElement> featureOsmIds,
-            final JsonArray featureProperties,final Set<Long> relationMemberOsmIds, final Set<Long> flaggedMemberOSMIds  )
+    private static void populateMemberProperties(final List<LocationIterableProperties> geometries,
+            final Set<JsonElement> featureOsmIds, final JsonArray featureProperties,
+            final Set<Long> flaggedMemberOSMIds, final Set<Long> relationMemberOsmIds)
     {
-        geometries.stream().forEach(geometry -> Optional.ofNullable(geometry.getProperties())
-                .ifPresent(propertyMap ->
+        geometries.stream().filter(g -> Optional.ofNullable(g.getProperties()).isPresent())
+                .map(g -> g.getProperties()).forEach(propertyMap ->
                 {
                     final String osmid = propertyMap.get("osmid");
                     // Fore each geometry, add properties for only the members of the relation.
@@ -187,11 +188,10 @@ public final class CheckFlagEvent extends Event
                         final JsonObject properties = new JsonObject();
                         propertyMap.forEach(properties::addProperty);
                         featureProperties.add(properties);
-                        Optional.ofNullable(properties.get("osmid"))
-                                .ifPresent(featureOsmIds::add);
+                        Optional.ofNullable(properties.get("osmid")).ifPresent(featureOsmIds::add);
                         flaggedMemberOSMIds.add(Long.parseLong(osmid));
                     }
-                }));
+                });
     }
 
     /**

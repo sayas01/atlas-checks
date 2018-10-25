@@ -5,10 +5,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.openstreetmap.atlas.geography.geojson.GeoJsonBuilder;
 
 /**
  * Test for {@link CheckFlag}.
@@ -93,4 +95,20 @@ public class CheckFlagTest
         this.setup.getAtlas().entities().forEach(entity -> flag.addObject(entity));
         testSerialization(flag);
     }
+
+    @Test
+    public void testFlaggedRelations() throws IOException, ClassNotFoundException
+    {
+        final CheckFlag flag = new CheckFlag("a-identifier");
+        this.setup.getAtlas().entities().forEach(atlasEntity -> flag.addObject(atlasEntity));
+        // Tests if both the relations are added to flag
+        Assert.assertEquals(flag.getFlaggedRelations().size(), 2);
+        Assert.assertEquals(flag.getFlaggedRelations().iterator().next().members().size(), 3);
+        final List<GeoJsonBuilder.LocationIterableProperties> locationIterableProperties = flag
+                .getLocationIterableProperties();
+        // Tests if relation member properties got added
+        Assert.assertTrue(locationIterableProperties.stream()
+                .anyMatch(loc -> loc.getProperties().containsKey("role")));
+    }
 }
+

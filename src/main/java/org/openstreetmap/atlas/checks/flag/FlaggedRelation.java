@@ -137,7 +137,8 @@ public class FlaggedRelation extends FlaggedObject
         while (!toProcess.isEmpty())
         {
             polledMember = toProcess.poll();
-            if (polledMember.getEntity() instanceof Relation && !relationsSeen.contains(polledMember.getEntity().getIdentifier()))
+            if (polledMember.getEntity() instanceof Relation
+                    && !relationsSeen.contains(polledMember.getEntity().getIdentifier()))
             {
                 ((Relation) polledMember.getEntity()).members()
                         .forEach(member -> toProcess.add(member));

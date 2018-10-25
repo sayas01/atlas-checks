@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openstreetmap.atlas.checks.base.Check;
@@ -329,14 +330,11 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
      */
     public List<GeoJsonBuilder.LocationIterableProperties> getLocationIterableProperties()
     {
-        // If flagged object is relation
-        if (this.flaggedRelations.size() > 0)
-        {
-            return getListOfGeoJsonObjectsForFlaggedRelation();
-        }
-        return this.flaggedObjects.stream()
-                .map(flaggedObject -> new GeoJsonBuilder.LocationIterableProperties(
-                        flaggedObject.getGeometry(), flaggedObject.getProperties()))
+        return Stream
+                .concat(getListOfGeoJsonObjectsForFlaggedRelation().stream(), this.flaggedObjects
+                        .stream()
+                        .map(flaggedObject -> new GeoJsonBuilder.LocationIterableProperties(
+                                flaggedObject.getGeometry(), flaggedObject.getProperties())))
                 .collect(Collectors.toList());
     }
 
@@ -362,8 +360,8 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
                 if (entity instanceof LocationItem)
                 {
                     final FlaggedPoint flaggedPoint = new FlaggedPoint((LocationItem) entity);
-                    flaggedObjectProperties=flaggedPoint.getProperties();
-                    flaggedObject=flaggedPoint;
+                    flaggedObjectProperties = flaggedPoint.getProperties();
+                    flaggedObject = flaggedPoint;
                 }
                 // If edge, consider only the master edges
                 else if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
@@ -372,15 +370,16 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
                     if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
                     {
                         final FlaggedPolyline flaggedPolyline = new FlaggedPolyline(entity);
-                        flaggedObject=flaggedPolyline;
-                        flaggedObjectProperties=flaggedPolyline.getProperties();
+                        flaggedObject = flaggedPolyline;
+                        flaggedObjectProperties = flaggedPolyline.getProperties();
                     }
                 }
-                if(flaggedObject!=null)
+                if (flaggedObject != null)
                 {
                     // Add member role and relation identifier to the property map
                     flaggedObjectProperties.put("role", relationMember.getRole());
-                    flaggedObjectProperties.put("part of", relationMember.getRelationIdentifier() + "");
+                    flaggedObjectProperties.put("part of",
+                            relationMember.getRelationIdentifier() + "");
                     locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(
                             flaggedObject.getGeometry(), flaggedObjectProperties));
                 }
