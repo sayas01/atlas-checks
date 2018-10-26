@@ -113,9 +113,9 @@ public class CheckFlagTest
         Assert.assertTrue(locationIterableProperties.stream()
                 .anyMatch(loc -> loc.getProperties().containsKey("role")));
         // Tests if list of LocationIterableProperties are populated
-        Assert.assertEquals(locationIterableProperties.size(),18);
+        Assert.assertEquals(locationIterableProperties.size(), 18);
         // Tests if geojson objects are created for members of flagged relations
-        Assert.assertEquals(flag.getListOfGeoJsonObjectsForFlaggedRelation().size(),5);
+        Assert.assertEquals(flag.getListOfGeoJsonObjectsForFlaggedRelation().size(), 5);
     }
 
 }
