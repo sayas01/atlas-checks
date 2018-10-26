@@ -170,7 +170,7 @@ public class FlaggedRelation extends FlaggedObject
      * Populate properties of relation
      *
      * @param relation
-     * @return
+     * @return map of relation tags with additional key-value properties
      */
     private Map<String, String> initProperties(final Relation relation)
     {

@@ -325,6 +325,8 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
     }
 
     /**
+     * Concatenates lists of {@link GeoJsonBuilder.LocationIterableProperties}
+     *
      * @return a list of {@link GeoJsonBuilder.LocationIterableProperties} representing all flagged
      *         geometries
      */
@@ -339,6 +341,8 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
     }
 
     /**
+     * Creates geojson objects for the members of the flagged relations.
+     *
      * @return a list of {@link GeoJsonBuilder.LocationIterableProperties} representing all flagged
      *         geometries of FlaggedRelation
      */
@@ -348,9 +352,9 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
         final Iterator<FlaggedRelation> iterator = this.flaggedRelations.iterator();
         while (iterator.hasNext())
         {
-            final FlaggedRelation next = iterator.next();
-            // Get flattened members of relation
-            final RelationMemberList relationMembers = next.getflattenedRelationMembers();
+            // Get flattened members of relation as a RelationMemberList
+            final RelationMemberList relationMembers = iterator.next()
+                    .getflattenedRelationMembers();
             for (final RelationMember relationMember : relationMembers)
             {
                 final AtlasEntity entity = relationMember.getEntity();

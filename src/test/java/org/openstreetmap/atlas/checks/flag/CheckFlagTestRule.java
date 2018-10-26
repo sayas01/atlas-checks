@@ -16,7 +16,7 @@ import org.openstreetmap.atlas.utilities.testing.TestAtlas.Relation.Member;
 /**
  * {@link CheckFlagTest} data generator
  *
- * @author mkalender
+ * @author mkalender, sayas01
  */
 public class CheckFlagTestRule extends CoreTestRule
 {
@@ -66,7 +66,7 @@ public class CheckFlagTestRule extends CoreTestRule
                     @Relation(id = "456", members = {
                             @Member(id = "23", type = "edge", role = RelationTypeTag.RESTRICTION_ROLE_FROM),
                             @Member(id = "1", type = "node", role = RelationTypeTag.RESTRICTION_ROLE_VIA) }, tags = {
-                                    "restriction=no_right_turn" }), })
+                                    "restriction=no_right_turn" }) })
     private Atlas atlas;
 
     public Atlas getAtlas()

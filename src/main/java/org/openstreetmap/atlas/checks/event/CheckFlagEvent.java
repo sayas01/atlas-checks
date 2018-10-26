@@ -97,7 +97,8 @@ public final class CheckFlagEvent extends Event
     }
 
     /**
-     * Populates properties of flaggedRelations
+     * Populates properties of flaggedRelations. Both the relation properties as well as its member
+     * properties will be populated.
      * 
      * @param flag
      * @param flagProperties
@@ -162,7 +163,11 @@ public final class CheckFlagEvent extends Event
     }
 
     /**
-     * Populate properties of flagged relation members
+     * Populate properties of relation members. Note: @param geometries has geometries of all
+     * flattened members. Properties will be populated from the list of geometries of relation
+     * members only. This makes sure that the duplicate properties of way sectioned edges are not
+     * added. Eg: if a way in OSM has five edges in Atlas, then the geometry of all the five edges
+     * will be added but only the properties of one of these.
      *
      * @param geometries
      * @param featureOsmIds
@@ -174,14 +179,16 @@ public final class CheckFlagEvent extends Event
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties,
             final Set<Long> flaggedMemberOSMIds, final Set<Long> relationMemberOsmIds)
     {
-        geometries.stream().filter(g -> Optional.ofNullable(g.getProperties()).isPresent())
-                .map(g -> g.getProperties()).forEach(propertyMap ->
+        geometries.stream()
+                .filter(geometry -> Optional.ofNullable(geometry.getProperties()).isPresent())
+                .map(geometry -> geometry.getProperties()).forEach(propertyMap ->
                 {
                     final String osmid = propertyMap.get("osmid");
                     // Fore each geometry, add properties for only the members of the relation.
                     // This ensures that the same properties of way sectioned edges are not
-                    // duplicated
-                    // Also add properties of only relation members and not flattened members
+                    // duplicated. Also, only relation member properties are added and not
+                    // properties
+                    // of all flattened members.
                     if (!flaggedMemberOSMIds.contains(Long.parseLong(osmid))
                             && relationMemberOsmIds.contains(Long.parseLong(osmid)))
                     {
@@ -212,10 +219,12 @@ public final class CheckFlagEvent extends Event
         final JsonObject flagPropertiesJson = new JsonObject();
         flagPropertiesJson.addProperty("id", flag.getIdentifier());
         flagPropertiesJson.addProperty("instructions", flag.getInstructions());
-
         // Add additional properties
         additionalProperties.forEach(flagPropertiesJson::addProperty);
-
+        // Add relation properties of the flaggedRelation to all its members.
+        // If relations are not flagged then the list is empty and no action will be taken.
+        flag.getFlaggedRelations().stream().map(flaggedRelation -> flaggedRelation.getProperties())
+                .forEach(map -> map.forEach(flagPropertiesJson::addProperty));
         // Add properties to the previously generate geojson
         flagJson.add("properties", flagPropertiesJson);
         return flagJson;
