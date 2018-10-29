@@ -356,7 +356,7 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
         {
             // Get flattened members of relation as a RelationMemberList
             final RelationMemberList relationMembers = iterator.next()
-                    .getflattenedRelationMembers();
+                    .getFlattenedRelationMembers();
             for (final RelationMember relationMember : relationMembers)
             {
                 final AtlasEntity entity = relationMember.getEntity();

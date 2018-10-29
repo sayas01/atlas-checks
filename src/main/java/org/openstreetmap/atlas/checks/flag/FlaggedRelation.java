@@ -90,7 +90,7 @@ public class FlaggedRelation extends FlaggedObject
      * 
      * @return {@link RelationMemberList}
      */
-    public RelationMemberList getflattenedRelationMembers()
+    public RelationMemberList getFlattenedRelationMembers()
     {
         final List<RelationMember> listOfMembers = new ArrayList<>();
         final Deque<RelationMember> toProcess = new LinkedList<>();
