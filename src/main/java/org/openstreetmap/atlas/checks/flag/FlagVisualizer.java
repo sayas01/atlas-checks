@@ -38,12 +38,12 @@ public class FlagVisualizer
     public GeoJsonObject visualize(final Iterable<CheckFlag> flags)
     {
         final GeoJsonBuilder result = new GeoJsonBuilder();
-        final List<GeoJsonBuilder.LocationIterableProperties> shapes = new ArrayList<>();
+        final List<GeoJsonBuilder.GeometryWithProperties> shapes = new ArrayList<>();
         flags.forEach(flag ->
         {
             shapes.addAll(flag.getLocationIterableProperties());
         });
 
-        return result.create(shapes);
+        return result.createFromGeometriesWithProperties(shapes);
     }
 }

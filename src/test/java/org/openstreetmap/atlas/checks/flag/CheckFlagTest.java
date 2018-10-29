@@ -107,7 +107,7 @@ public class CheckFlagTest
         Assert.assertEquals(flag.getFlaggedObjects().size(), 13);
         // Checks if members of flagged relations are added
         Assert.assertEquals(flag.getFlaggedRelations().iterator().next().members().size(), 3);
-        final List<GeoJsonBuilder.LocationIterableProperties> locationIterableProperties = flag
+        final List<GeoJsonBuilder.GeometryWithProperties> locationIterableProperties = flag
                 .getLocationIterableProperties();
         // Tests if relation member properties got added
         Assert.assertTrue(locationIterableProperties.stream()

@@ -325,30 +325,32 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
     }
 
     /**
-     * Concatenates lists of {@link GeoJsonBuilder.LocationIterableProperties}
+     * Concatenates lists of {@link GeoJsonBuilder.GeometryWithProperties}
      *
-     * @return a list of {@link GeoJsonBuilder.LocationIterableProperties} representing all flagged
+     * @return a list of {@link GeoJsonBuilder.GeometryWithProperties} representing all flagged
      *         geometries
      */
-    public List<GeoJsonBuilder.LocationIterableProperties> getLocationIterableProperties()
+    public List<GeoJsonBuilder.GeometryWithProperties> getLocationIterableProperties()
     {
+
         return Stream
-                .concat(getListOfGeoJsonObjectsForFlaggedRelation().stream(), this.flaggedObjects
-                        .stream()
-                        .map(flaggedObject -> new GeoJsonBuilder.LocationIterableProperties(
-                                flaggedObject.getGeometry(), flaggedObject.getProperties())))
+                .concat(getListOfGeoJsonObjectsForFlaggedRelation().stream(),
+                        this.flaggedObjects.stream()
+                                .map(flaggedObject -> new GeoJsonBuilder.GeometryWithProperties(
+                                        flaggedObject.getGeometry(),
+                                        new HashMap<>(flaggedObject.getProperties()))))
                 .collect(Collectors.toList());
     }
 
     /**
      * Creates geojson objects for the members of the flagged relations.
      *
-     * @return a list of {@link GeoJsonBuilder.LocationIterableProperties} representing all flagged
+     * @return a list of {@link GeoJsonBuilder.GeometryWithProperties} representing all flagged
      *         geometries of FlaggedRelation
      */
-    public List<GeoJsonBuilder.LocationIterableProperties> getListOfGeoJsonObjectsForFlaggedRelation()
+    public List<GeoJsonBuilder.GeometryWithProperties> getListOfGeoJsonObjectsForFlaggedRelation()
     {
-        final List<GeoJsonBuilder.LocationIterableProperties> locationIterablePropertyList = new ArrayList<>();
+        final List<GeoJsonBuilder.GeometryWithProperties> locationIterablePropertyList = new ArrayList<>();
         final Iterator<FlaggedRelation> iterator = this.flaggedRelations.iterator();
         while (iterator.hasNext())
         {
@@ -384,8 +386,8 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
                     flaggedObjectProperties.put("role", relationMember.getRole());
                     flaggedObjectProperties.put("part of",
                             relationMember.getRelationIdentifier() + "");
-                    locationIterablePropertyList.add(new GeoJsonBuilder.LocationIterableProperties(
-                            flaggedObject.getGeometry(), flaggedObjectProperties));
+                    locationIterablePropertyList.add(new GeoJsonBuilder.GeometryWithProperties(
+                            flaggedObject.getGeometry(), new HashMap<>(flaggedObjectProperties)));
                 }
             }
         }
