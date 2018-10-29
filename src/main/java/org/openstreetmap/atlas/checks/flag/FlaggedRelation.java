@@ -48,7 +48,7 @@ public class FlaggedRelation extends FlaggedObject
     {
         final List<Location> listOfLocation = new ArrayList<>();
 
-        final Set<AtlasObject> flattenedMembers = this.flatten();
+        final Set<AtlasObject> flattenedMembers = this.relation.flatten();
         if (flattenedMembers.size() == 1)
         {
             final AtlasObject object = flattenedMembers.iterator().next();
@@ -83,43 +83,6 @@ public class FlaggedRelation extends FlaggedObject
         }
         final PolyLine polyLine = new PolyLine(listOfLocation);
         return polyLine;
-    }
-
-    /**
-     * "Flattens" the relation by returning the set of non-Relation members. Adds any non-Relation
-     * members to the set, then loops on any Relation members to add their non-Relation members as
-     * well. Keeps track of Relations whose identifiers have already been operated on, so that
-     * recursively defined relations don't cause problems.
-     *
-     * @return a Set of AtlasObjects all related to this Relation, with no Relations.
-     */
-    public Set<AtlasObject> flatten()
-    {
-        final Set<AtlasObject> relationMembers = new HashSet<>();
-        final Deque<AtlasObject> toProcess = new LinkedList<>();
-        final Set<Long> relationsSeen = new HashSet<>();
-        AtlasObject polledMember;
-
-        toProcess.add(this.relation);
-        while (!toProcess.isEmpty())
-        {
-            polledMember = toProcess.poll();
-            if (polledMember instanceof Relation)
-            {
-                if (relationsSeen.contains(polledMember.getIdentifier()))
-                {
-                    continue;
-                }
-                ((Relation) polledMember).members()
-                        .forEach(member -> toProcess.add(member.getEntity()));
-                relationsSeen.add(polledMember.getIdentifier());
-            }
-            else
-            {
-                relationMembers.add(polledMember);
-            }
-        }
-        return relationMembers;
     }
 
     /**
