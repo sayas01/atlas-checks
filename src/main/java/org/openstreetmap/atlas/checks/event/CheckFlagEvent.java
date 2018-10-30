@@ -69,8 +69,11 @@ public final class CheckFlagEvent extends Event
         final JsonArray featureProperties = new JsonArray();
         final Set<JsonElement> featureOsmIds = new HashSet<>();
         // If flagged object is relation then populate relation member properties
-        populateFlaggedRelationProperties(flag, flagProperties, geometriesWithProperties,
-                featureOsmIds, featureProperties);
+        if(!flag.getFlaggedRelations().isEmpty())
+        {
+            populateFlaggedRelationProperties(flag, geometriesWithProperties,
+                    featureOsmIds, featureProperties);
+        }
         populateFlaggedObjectProperties(geometriesWithProperties, featureOsmIds, featureProperties);
         flagProperties.addProperty("feature_count", featureProperties.size());
         final JsonArray uniqueFeatureOsmIds = new JsonArray();
@@ -96,13 +99,11 @@ public final class CheckFlagEvent extends Event
      * properties will be populated.
      * 
      * @param flag
-     * @param flagProperties
      * @param geometriesWithProperties
      * @param featureOsmIds
      * @param featureProperties
      */
     private static void populateFlaggedRelationProperties(final CheckFlag flag,
-            final JsonObject flagProperties,
             final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties,
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
     {
