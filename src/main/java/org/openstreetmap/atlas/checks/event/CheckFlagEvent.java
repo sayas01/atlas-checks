@@ -55,29 +55,24 @@ public final class CheckFlagEvent extends Event
         additionalProperties.forEach(flagProperties::addProperty);
 
         final JsonObject feature;
-        final List<GeoJsonBuilder.GeometryWithProperties> geometries = flag
+        final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties = flag
                 .getLocationIterableProperties();
-        if (geometries.size() == 1)
+        if (geometriesWithProperties.size() == 1)
         {
-            feature = GEOJSON_BUILDER.create(geometries.get(0));
+            feature = GEOJSON_BUILDER.create(geometriesWithProperties.get(0));
         }
         else
         {
-            feature = GEOJSON_BUILDER.createGeometryCollectionFeature(geometries).jsonObject();
+            feature = GEOJSON_BUILDER.createGeometryCollectionFeature(geometriesWithProperties)
+                    .jsonObject();
         }
         final JsonArray featureProperties = new JsonArray();
         final Set<JsonElement> featureOsmIds = new HashSet<>();
         // If flagged object is relation then populate relation member properties
-        if (!flag.getFlaggedRelations().isEmpty())
-        {
-            populateFlaggedRelationProperties(flag, flagProperties, geometries, featureOsmIds,
-                    featureProperties);
-        }
-        else
-        {
-            populateFlaggedObjectProperties(geometries, featureOsmIds, featureProperties);
-            flagProperties.addProperty("feature_count", geometries.size());
-        }
+        populateFlaggedRelationProperties(flag, flagProperties, geometriesWithProperties,
+                featureOsmIds, featureProperties);
+        populateFlaggedObjectProperties(geometriesWithProperties, featureOsmIds, featureProperties);
+        flagProperties.addProperty("feature_count", featureProperties.size());
         final JsonArray uniqueFeatureOsmIds = new JsonArray();
         featureOsmIds.forEach(uniqueFeatureOsmIds::add);
 
@@ -102,24 +97,25 @@ public final class CheckFlagEvent extends Event
      * 
      * @param flag
      * @param flagProperties
-     * @param geometries
+     * @param geometriesWithProperties
      * @param featureOsmIds
      * @param featureProperties
      */
     private static void populateFlaggedRelationProperties(final CheckFlag flag,
             final JsonObject flagProperties,
-            final List<GeoJsonBuilder.GeometryWithProperties> geometries,
+            final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties,
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
     {
         final Iterator<FlaggedRelation> iterator = flag.getFlaggedRelations().iterator();
-        final JsonObject relationProperties = new JsonObject();
-
         while (iterator.hasNext())
         {
+            final JsonObject relationProperties = new JsonObject();
+            final JsonObject innerRelationProperties = new JsonObject();
             final Set<Long> flaggedMemberOSMIds = new HashSet<>();
             final FlaggedRelation next = iterator.next();
             // Populate flagged relation properties
             next.getProperties().forEach(relationProperties::addProperty);
+            featureProperties.add(relationProperties);
             // If the flagged relations have relations as members, then add the properties of the
             // member relations as well.
             // Get all members of the relation that are relations
@@ -128,39 +124,44 @@ public final class CheckFlagEvent extends Event
                     .map(relationMember -> new FlaggedRelation(
                             (Relation) relationMember.getEntity()).getProperties())
                     // Populate the properties of the member relations
-                    .forEach(map -> map.forEach(relationProperties::addProperty));
+                    .forEach(map -> map.forEach(innerRelationProperties::addProperty));
+            featureProperties.add(innerRelationProperties);
             // Set of relation member OSM IDs
             final Set<Long> relationMemberOsmIds = next.members().stream()
                     .map(member -> member.getEntity().getOsmIdentifier())
                     .collect(Collectors.toSet());
             // Populate properties of members
-            populateMemberProperties(geometries, featureOsmIds, featureProperties,
+            populateMemberProperties(geometriesWithProperties, featureOsmIds, featureProperties,
                     flaggedMemberOSMIds, relationMemberOsmIds);
+            Optional.ofNullable(relationProperties.get("osmid")).ifPresent(featureOsmIds::add);
+            Optional.ofNullable(innerRelationProperties.get("osmid")).ifPresent(featureOsmIds::add);
         }
-        featureProperties.add(relationProperties);
-        flagProperties.addProperty("feature_count", featureProperties.size());
-        Optional.ofNullable(relationProperties.get("osmid")).ifPresent(featureOsmIds::add);
     }
 
     /**
      * Populate properties of flagged objects
      *
-     * @param geometries
+     * @param geometriesWithProperties
      * @param featureOsmIds
      * @param featureProperties
      */
     private static void populateFlaggedObjectProperties(
-            final List<GeoJsonBuilder.GeometryWithProperties> geometries,
+            final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties,
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
     {
-        geometries.stream().forEach(
-                geometry -> Optional.ofNullable(geometry.getProperties()).ifPresent(propertyMap ->
+        geometriesWithProperties.stream().forEach(geometryWithProperties -> Optional
+                .ofNullable(geometryWithProperties.getProperties()).ifPresent(propertyMap ->
                 {
                     final JsonObject properties = new JsonObject();
-                    propertyMap
-                            .forEach((key, value) -> properties.addProperty(key, (String) value));
-                    featureProperties.add(properties);
-                    Optional.ofNullable(properties.get("osmid")).ifPresent(featureOsmIds::add);
+                    // Consider only those geometriesWithProperties that are not members/flattened members of relations
+                    if (!propertyMap.containsKey("role"))
+                    {
+                        propertyMap.forEach(
+                                (key, value) -> properties.addProperty(key, (String) value));
+                        featureProperties.add(properties);
+                        Optional.ofNullable(properties.get("osmid")).ifPresent(featureOsmIds::add);
+                    }
+
                 }));
     }
 
@@ -171,20 +172,22 @@ public final class CheckFlagEvent extends Event
      * added. Eg: if a way in OSM has five edges in Atlas, then the geometry of all the five edges
      * will be added but only the properties of one of these.
      *
-     * @param geometries
+     * @param geometriesWithProperties
      * @param featureOsmIds
      * @param featureProperties
      * @param relationMemberOsmIds
      * @param flaggedMemberOSMIds
      */
     private static void populateMemberProperties(
-            final List<GeoJsonBuilder.GeometryWithProperties> geometries,
+            final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties,
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties,
             final Set<Long> flaggedMemberOSMIds, final Set<Long> relationMemberOsmIds)
     {
-        geometries.stream()
-                .filter(geometry -> Optional.ofNullable(geometry.getProperties()).isPresent())
-                .map(geometry -> geometry.getProperties()).forEach(propertyMap ->
+        geometriesWithProperties.stream()
+                .filter(geometryWithProperties -> Optional
+                        .ofNullable(geometryWithProperties.getProperties()).isPresent())
+                .map(geometryWithProperties -> geometryWithProperties.getProperties())
+                .forEach(propertyMap ->
                 {
                     final Long osmid = Long.valueOf((String) propertyMap.get("osmid"));
                     // Fore each geometry, add properties for only the members of the relation.
@@ -216,7 +219,7 @@ public final class CheckFlagEvent extends Event
      * @return {@link JsonObject} created from {@link CheckFlag}
      */
     public static JsonObject flagToJson(final CheckFlag flag,
-            final Map<String, Object> additionalProperties)
+            final Map<String, String> additionalProperties)
     {
         final JsonObject flagJson = GEOJSON_BUILDER
                 .createFromGeometriesWithProperties(flag.getLocationIterableProperties())
@@ -308,7 +311,7 @@ public final class CheckFlagEvent extends Event
      */
     public JsonObject toGeoJsonFeatureCollection()
     {
-        final Map<String, Object> contextualProperties = new HashMap<>();
+        final Map<String, String> contextualProperties = new HashMap<>();
         contextualProperties.put("generator", this.getCheckName());
         contextualProperties.put("timestamp", this.getTimestamp().toString());
 

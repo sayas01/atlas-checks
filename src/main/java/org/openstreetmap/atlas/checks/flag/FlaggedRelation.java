@@ -18,8 +18,6 @@ import org.openstreetmap.atlas.geography.atlas.items.Relation;
 import org.openstreetmap.atlas.geography.atlas.items.RelationMember;
 import org.openstreetmap.atlas.geography.atlas.items.RelationMemberList;
 import org.openstreetmap.atlas.utilities.collections.Iterables;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A flag for a {@link Relation}
@@ -28,7 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 public class FlaggedRelation extends FlaggedObject
 {
-    private static final Logger logger = LoggerFactory.getLogger(FlaggedPoint.class);
     private final Relation relation;
     private final Map<String, String> properties;
 

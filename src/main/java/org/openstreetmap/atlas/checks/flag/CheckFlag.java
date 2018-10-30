@@ -153,7 +153,7 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
             }
         }
         // If object is instance of relation, then add the relation to flaggedRelations set
-        if (object instanceof Relation)
+        else if (object instanceof Relation)
         {
             this.flaggedRelations.add(new FlaggedRelation((Relation) object));
         }
