@@ -4,7 +4,7 @@
       "org.openstreetmap.atlas.checks.validation"
     ],
     "type": "org.openstreetmap.atlas.checks.base.BaseCheck",
-    "enabled.value.default": true
+    "enabled.value.default": false
   },
   "PoolSizeCheck": {
     "surface": {
@@ -165,6 +165,9 @@
       "difficulty": "HARD",
       "tags":"highway"
     }
+  },
+  "LineCrossingWaterBodyCheck": {
+    "enabled": true
   },
   "MalformedRoundaboutCheck" : {
     "traffic.countries.left":["AIA", "ATG", "AUS", "BGD", "BHS", "BMU", "BRB", "BRN", "BTN", "BWA",
