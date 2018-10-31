@@ -3,6 +3,7 @@ package org.openstreetmap.atlas.checks.validation.intersections;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -49,6 +50,7 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
     private static final List<String> FALLBACK_INSTRUCTIONS = Arrays.asList(WATERBODY_INSTRUCTION,
             LINEAR_INSTRUCTION);
     private static final String ADDRESS_PREFIX_KEY = "addr";
+    private static final String WAS = "was:";
     private static final long serialVersionUID = 6048659185833217159L;
 
     /**
@@ -103,7 +105,11 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
                 || crossingItem.getTags().containsKey("ford")
                         && crossingItem.getOsmTags().get("ford").equals("yes")
                 || crossingItem.getOsmTags().containsKey("winter_road")
-                        && crossingItem.getTags().get("winter_road").equals("yes");
+                        && crossingItem.getTags().get("winter_road").equals("yes")
+                || crossingItem.getOsmTags().containsKey("snowmobile")
+                        && crossingItem.getTags().get("snowmobile").equals("yes")
+                || crossingItem.getOsmTags().containsKey("ski")
+                        && crossingItem.getTags().get("ski").equals("yes");
     }
 
     public LineCrossingWaterBodyCheck(final Configuration configuration)
@@ -143,18 +149,29 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
         for (final AtlasEntity crossingLineItem : crossingLinearItems)
         {
             // If no OSM tags associated with line
-            if (crossingLineItem instanceof LineItem && crossingLineItem.getOsmTags().isEmpty())
+            if (crossingLineItem instanceof LineItem)
             {
-                final Set<Relation> relations = crossingLineItem.relations();
-                // and it is not part of any relation, then infer it as part of a boundary/coastline
-                // relation that is not ingested in the atlas. Such items needn't be flagged
-                // or if the line is part of relation that has key natural or tag, 'place=village'
-                if (relations.isEmpty() || relations.stream()
-                        .filter(relation -> relation.isMultiPolygon())
-                        .filter(relation -> relation.getOsmTags().containsKey("natural")
-                                || relation.getOsmTags().containsKey("place")
-                                        && relation.getOsmTags().get("place").equals("village"))
-                        .count() != 0)
+                final Map<String, String> osmTags = crossingLineItem.getOsmTags();
+                if (osmTags.isEmpty())
+                {
+                    final Set<Relation> relations = crossingLineItem.relations();
+                    // and it is not part of any relation, then infer it as part of a
+                    // boundary/coastline
+                    // relation that is not ingested in the atlas. Such items needn't be flagged
+                    // or if the line is part of relation that has key natural or tag,
+                    // 'place=village'
+                    if (relations.isEmpty() || relations.stream()
+                            .filter(relation -> relation.isMultiPolygon())
+                            .filter(relation -> relation.getOsmTags().containsKey("natural")
+                                    || relation.getOsmTags().containsKey("place")
+                                    || relation.getOsmTags().containsKey("landuse")
+                                    || relation.getOsmTags().containsKey("waterway"))
+                            .count() != 0)
+                    {
+                        continue;
+                    }
+                }
+                else if (hasCanCrossKeys(osmTags))
                 {
                     continue;
                 }
@@ -181,6 +198,12 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
         }
 
         return Optional.empty();
+    }
+
+    private boolean hasCanCrossKeys(final Map<String, String> osmTags)
+    {
+        return osmTags.containsKey(WAS + "power") || osmTags.containsKey(WAS + "admin_level")
+                || osmTags.containsKey(WAS + "boundary") || osmTags.containsKey("note");
     }
 
     @Override

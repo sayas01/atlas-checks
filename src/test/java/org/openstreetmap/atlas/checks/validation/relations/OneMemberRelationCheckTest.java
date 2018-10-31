@@ -62,7 +62,7 @@ public class OneMemberRelationCheckTest
     {
         this.verifier.actual(this.setup.oneMemberRelationRelationAtlas(), check);
         this.verifier.globallyVerify(flags -> Assert.assertEquals(1, flags.size()));
-        this.verifier.verify(flag -> Assert.assertEquals(flag.getFlaggedObjects().size(), 3));
+        this.verifier.verify(flag -> Assert.assertEquals(flag.getFlaggedObjects().size(), 0));
     }
 
 }

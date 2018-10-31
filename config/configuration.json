@@ -207,6 +207,7 @@
     }
   },
   "OneMemberRelationCheck": {
+    "enabled": false,
     "challenge": {
       "description": "Tasks containing relations with only one member.",
       "blurb": "One Member Relations",
