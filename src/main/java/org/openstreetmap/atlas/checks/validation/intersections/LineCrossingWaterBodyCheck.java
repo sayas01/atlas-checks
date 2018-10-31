@@ -20,12 +20,15 @@ import org.openstreetmap.atlas.geography.atlas.items.AtlasItem;
 import org.openstreetmap.atlas.geography.atlas.items.AtlasObject;
 import org.openstreetmap.atlas.geography.atlas.items.LineItem;
 import org.openstreetmap.atlas.geography.atlas.items.Relation;
+import org.openstreetmap.atlas.tags.AdministrativeLevelTag;
 import org.openstreetmap.atlas.tags.BoundaryTag;
 import org.openstreetmap.atlas.tags.BridgeTag;
 import org.openstreetmap.atlas.tags.HighwayTag;
 import org.openstreetmap.atlas.tags.IceRoadTag;
 import org.openstreetmap.atlas.tags.LandUseTag;
 import org.openstreetmap.atlas.tags.ManMadeTag;
+import org.openstreetmap.atlas.tags.NaturalTag;
+import org.openstreetmap.atlas.tags.PlaceTag;
 import org.openstreetmap.atlas.tags.PowerTag;
 import org.openstreetmap.atlas.tags.RouteTag;
 import org.openstreetmap.atlas.tags.TunnelTag;
@@ -50,7 +53,12 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
     private static final List<String> FALLBACK_INSTRUCTIONS = Arrays.asList(WATERBODY_INSTRUCTION,
             LINEAR_INSTRUCTION);
     private static final String ADDRESS_PREFIX_KEY = "addr";
-    private static final String WAS = "was:";
+    private static final String WAS_POWER = "was:power";
+    private static final String WAS_ADMIN_LEVEL = "was:admin_level";
+    private static final String WAS_BOUNDARY = "was:boundary";
+    private static final String NOTE = "note";
+    private static final String SOURCE = "source";
+
     private static final long serialVersionUID = 6048659185833217159L;
 
     /**
@@ -109,7 +117,8 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
                 || crossingItem.getOsmTags().containsKey("snowmobile")
                         && crossingItem.getTags().get("snowmobile").equals("yes")
                 || crossingItem.getOsmTags().containsKey("ski")
-                        && crossingItem.getTags().get("ski").equals("yes");
+                        && crossingItem.getTags().get("ski").equals("yes")
+                || isBoundary(crossingItem);
     }
 
     public LineCrossingWaterBodyCheck(final Configuration configuration)
@@ -148,34 +157,6 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
         // each edge will be marked explicitly.
         for (final AtlasEntity crossingLineItem : crossingLinearItems)
         {
-            // If no OSM tags associated with line
-            if (crossingLineItem instanceof LineItem)
-            {
-                final Map<String, String> osmTags = crossingLineItem.getOsmTags();
-                if (osmTags.isEmpty())
-                {
-                    final Set<Relation> relations = crossingLineItem.relations();
-                    // and it is not part of any relation, then infer it as part of a
-                    // boundary/coastline
-                    // relation that is not ingested in the atlas. Such items needn't be flagged
-                    // or if the line is part of relation that has key natural or tag,
-                    // 'place=village'
-                    if (relations.isEmpty() || relations.stream()
-                            .filter(relation -> relation.isMultiPolygon())
-                            .filter(relation -> relation.getOsmTags().containsKey("natural")
-                                    || relation.getOsmTags().containsKey("place")
-                                    || relation.getOsmTags().containsKey("landuse")
-                                    || relation.getOsmTags().containsKey("waterway"))
-                            .count() != 0)
-                    {
-                        continue;
-                    }
-                }
-                else if (hasCanCrossKeys(osmTags))
-                {
-                    continue;
-                }
-            }
             // Check whether crossing linear item can actually cross
             if (!(canCrossWaterBody(crossingLineItem)
                     || Utilities.haveExplicitLocationsForIntersections(areaAsPolygon,
@@ -185,7 +166,6 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
                 newFlag.addObject(crossingLineItem);
                 newFlag.addInstruction(
                         this.getLocalizedInstruction(1, crossingLineItem.getOsmIdentifier()));
-
                 // Set indicator to make sure we return invalid crossings
                 hasInvalidCrossings = true;
             }
@@ -200,10 +180,56 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
         return Optional.empty();
     }
 
-    private boolean hasCanCrossKeys(final Map<String, String> osmTags)
+    /**
+     * Checks if the crossing item is part of boundary relations or has only certain tags
+     * 
+     * @param crossingLineItem
+     * @return
+     */
+    private static boolean isBoundary(final AtlasEntity crossingLineItem)
     {
-        return osmTags.containsKey(WAS + "power") || osmTags.containsKey(WAS + "admin_level")
-                || osmTags.containsKey(WAS + "boundary") || osmTags.containsKey("note");
+        final Map<String, String> osmTags = crossingLineItem.getOsmTags();
+        final Set<Relation> relations = crossingLineItem.relations();
+        // Crossing item is not part of any relation and has no tags, then infer it as part of a
+        // boundary/coastline relation that is not ingested in the atlas.
+        return osmTags.isEmpty() && relations.isEmpty()
+                // Certain relations can cross water body.
+                || canRelationCrossWaterBody(relations)
+                // If crossing item has only certain tags
+                || hasOnlyValidCrossingTags(osmTags);
+    }
+
+    /**
+     * Checks if the crossing item has only certain tags
+     *
+     * @param osmTags
+     * @return
+     */
+    private static boolean hasOnlyValidCrossingTags(final Map<String, String> osmTags)
+    {
+        return osmTags.size() == osmTags.entrySet().stream().map(entry -> entry.getKey())
+                .filter(key -> key.equalsIgnoreCase(WAS_POWER)
+                        || key.equalsIgnoreCase(WAS_ADMIN_LEVEL)
+                        || key.equalsIgnoreCase(WAS_BOUNDARY) || key.equalsIgnoreCase(NOTE)
+                        || key.equalsIgnoreCase(SOURCE))
+                .count();
+    }
+
+    /**
+     * Checks if the relation can validly cross water body.
+     *
+     * @param relations
+     * @return
+     */
+    private static boolean canRelationCrossWaterBody(final Set<Relation> relations)
+    {
+        return relations.stream().filter(relation -> relation.isMultiPolygon())
+                .anyMatch(relation -> Validators.hasValuesFor(relation, NaturalTag.class)
+                        || Validators.hasValuesFor(relation, PlaceTag.class)
+                        || Validators.hasValuesFor(relation, LandUseTag.class)
+                        || Validators.hasValuesFor(relation, WaterwayTag.class)
+                        || Validators.hasValuesFor(relation, AdministrativeLevelTag.class)
+                        || Validators.hasValuesFor(relation, BoundaryTag.class));
     }
 
     @Override
