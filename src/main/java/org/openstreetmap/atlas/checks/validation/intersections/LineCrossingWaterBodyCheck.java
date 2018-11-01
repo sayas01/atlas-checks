@@ -53,11 +53,7 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
     private static final List<String> FALLBACK_INSTRUCTIONS = Arrays.asList(WATERBODY_INSTRUCTION,
             LINEAR_INSTRUCTION);
     private static final String ADDRESS_PREFIX_KEY = "addr";
-    private static final String WAS_POWER = "was:power";
-    private static final String WAS_ADMIN_LEVEL = "was:admin_level";
-    private static final String WAS_BOUNDARY = "was:boundary";
-    private static final String NOTE = "note";
-    private static final String SOURCE = "source";
+    private static final List<String> VALID_LINE_TAGS =Arrays.asList("was:power","was:admin_level", "was:boundary", "note", "source", "natural", "place", "landuse", "waterway", "admin_level", "boundary", "border_type");
 
     private static final long serialVersionUID = 6048659185833217159L;
 
@@ -118,7 +114,7 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
                         && crossingItem.getTags().get("snowmobile").equals("yes")
                 || crossingItem.getOsmTags().containsKey("ski")
                         && crossingItem.getTags().get("ski").equals("yes")
-                || isBoundary(crossingItem);
+                || crossingItem instanceof LineItem && isBoundary(crossingItem);
     }
 
     public LineCrossingWaterBodyCheck(final Configuration configuration)
@@ -208,10 +204,7 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
     private static boolean hasOnlyValidCrossingTags(final Map<String, String> osmTags)
     {
         return osmTags.size() == osmTags.entrySet().stream().map(entry -> entry.getKey())
-                .filter(key -> key.equalsIgnoreCase(WAS_POWER)
-                        || key.equalsIgnoreCase(WAS_ADMIN_LEVEL)
-                        || key.equalsIgnoreCase(WAS_BOUNDARY) || key.equalsIgnoreCase(NOTE)
-                        || key.equalsIgnoreCase(SOURCE))
+                .filter(key -> VALID_LINE_TAGS.contains(key.toLowerCase()))
                 .count();
     }
 
@@ -224,12 +217,23 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
     private static boolean canRelationCrossWaterBody(final Set<Relation> relations)
     {
         return relations.stream().filter(relation -> relation.isMultiPolygon())
-                .anyMatch(relation -> Validators.hasValuesFor(relation, NaturalTag.class)
-                        || Validators.hasValuesFor(relation, PlaceTag.class)
-                        || Validators.hasValuesFor(relation, LandUseTag.class)
-                        || Validators.hasValuesFor(relation, WaterwayTag.class)
-                        || Validators.hasValuesFor(relation, AdministrativeLevelTag.class)
-                        || Validators.hasValuesFor(relation, BoundaryTag.class));
+                .anyMatch(relation -> relationBorderTags(relation));
+    }
+
+    /**
+     * Valid tags for multi polygon relations
+     *
+     * @param entity
+     * @return
+     */
+    private static boolean relationBorderTags(final AtlasEntity entity)
+    {
+        return Validators.hasValuesFor(entity, NaturalTag.class)
+                || Validators.hasValuesFor(entity, PlaceTag.class)
+                || Validators.hasValuesFor(entity, LandUseTag.class)
+                || Validators.hasValuesFor(entity, WaterwayTag.class)
+                || Validators.hasValuesFor(entity, AdministrativeLevelTag.class)
+                || Validators.hasValuesFor(entity, BoundaryTag.class);
     }
 
     @Override
