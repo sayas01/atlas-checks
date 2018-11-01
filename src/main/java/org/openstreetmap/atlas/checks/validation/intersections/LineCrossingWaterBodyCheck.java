@@ -53,7 +53,9 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
     private static final List<String> FALLBACK_INSTRUCTIONS = Arrays.asList(WATERBODY_INSTRUCTION,
             LINEAR_INSTRUCTION);
     private static final String ADDRESS_PREFIX_KEY = "addr";
-    private static final List<String> VALID_LINE_TAGS =Arrays.asList("was:power","was:admin_level", "was:boundary", "note", "source", "natural", "place", "landuse", "waterway", "admin_level", "boundary", "border_type");
+    private static final List<String> VALID_LINE_TAGS = Arrays.asList("was:power",
+            "was:admin_level", "was:boundary", "note", "source", "natural", "place", "landuse",
+            "waterway", "admin_level", "boundary", "border_type");
 
     private static final long serialVersionUID = 6048659185833217159L;
 
@@ -204,8 +206,7 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
     private static boolean hasOnlyValidCrossingTags(final Map<String, String> osmTags)
     {
         return osmTags.size() == osmTags.entrySet().stream().map(entry -> entry.getKey())
-                .filter(key -> VALID_LINE_TAGS.contains(key.toLowerCase()))
-                .count();
+                .filter(key -> VALID_LINE_TAGS.contains(key.toLowerCase())).count();
     }
 
     /**
