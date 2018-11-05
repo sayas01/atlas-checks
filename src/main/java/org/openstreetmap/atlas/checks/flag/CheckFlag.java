@@ -38,6 +38,7 @@ import org.openstreetmap.atlas.utilities.collections.Iterables;
 import org.openstreetmap.atlas.utilities.collections.MultiIterable;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * A {@link CheckFlag} is used to flag one or more {@link AtlasObject}s found to violate some set of
@@ -354,19 +355,21 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
         final Iterator<FlaggedRelation> iterator = this.flaggedRelations.iterator();
         while (iterator.hasNext())
         {
+
             // Get flattened members of relation as a RelationMemberList
             final RelationMemberList relationMembers = iterator.next()
                     .getFlattenedRelationMembers();
             for (final RelationMember relationMember : relationMembers)
             {
                 final AtlasEntity entity = relationMember.getEntity();
-                Map<String, String> flaggedObjectProperties = new HashMap<>();
+                final Map<String, Object> flaggedObjectProperties = new HashMap<>();
+                final JsonObject roles = new JsonObject();
                 FlaggedObject flaggedObject = null;
 
                 if (entity instanceof LocationItem)
                 {
                     final FlaggedPoint flaggedPoint = new FlaggedPoint((LocationItem) entity);
-                    flaggedObjectProperties = flaggedPoint.getProperties();
+                    flaggedObjectProperties.putAll(flaggedPoint.getProperties());
                     flaggedObject = flaggedPoint;
                 }
                 // If edge, consider only the master edges
@@ -377,15 +380,14 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
                     {
                         final FlaggedPolyline flaggedPolyline = new FlaggedPolyline(entity);
                         flaggedObject = flaggedPolyline;
-                        flaggedObjectProperties = flaggedPolyline.getProperties();
+                        flaggedObjectProperties.putAll(flaggedPolyline.getProperties());
                     }
                 }
                 if (flaggedObject != null)
                 {
                     // Add member role and relation identifier to the property map
-                    flaggedObjectProperties.put("role", relationMember.getRole());
-                    flaggedObjectProperties.put("part of",
-                            relationMember.getRelationIdentifier() + "");
+                    roles.addProperty(relationMember.getRelationIdentifier()+"", relationMember.getRole());
+                    flaggedObjectProperties.put("role",roles);
                     locationIterablePropertyList.add(new GeoJsonBuilder.GeometryWithProperties(
                             flaggedObject.getGeometry(), new HashMap<>(flaggedObjectProperties)));
                 }
