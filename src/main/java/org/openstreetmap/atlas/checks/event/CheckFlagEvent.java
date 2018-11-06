@@ -15,6 +15,7 @@ import org.openstreetmap.atlas.checks.flag.FlaggedRelation;
 import org.openstreetmap.atlas.geography.atlas.items.Relation;
 import org.openstreetmap.atlas.geography.atlas.items.RelationMember;
 import org.openstreetmap.atlas.geography.geojson.GeoJsonBuilder;
+import org.openstreetmap.atlas.geography.geojson.GeoJsonBuilder.GeometryWithProperties;
 import org.openstreetmap.atlas.geography.geojson.GeoJsonObject;
 import org.openstreetmap.atlas.tags.HighwayTag;
 
@@ -56,7 +57,7 @@ public final class CheckFlagEvent extends Event
         additionalProperties.forEach(flagProperties::addProperty);
 
         final JsonObject feature;
-        final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties = flag
+        final List<GeometryWithProperties> geometriesWithProperties = flag
                 .getLocationIterableProperties();
         if (geometriesWithProperties.size() == 1)
         {
@@ -77,8 +78,6 @@ public final class CheckFlagEvent extends Event
         }
 
         populateFlaggedObjectProperties(geometriesWithProperties, featureOsmIds, featureProperties);
-
-        flagProperties.addProperty("feature_count", featureProperties.size());
         final JsonArray uniqueFeatureOsmIds = new JsonArray();
         featureOsmIds.forEach(uniqueFeatureOsmIds::add);
 
@@ -92,6 +91,7 @@ public final class CheckFlagEvent extends Event
         // Reference properties lost during GeoJson conversion
         flagProperties.add("feature_properties", featureProperties);
         flagProperties.add("feature_osmids", uniqueFeatureOsmIds);
+        flagProperties.addProperty("feature_count", featureProperties.size());
         feature.addProperty("id", flag.getIdentifier());
         feature.add("properties", flagProperties);
         return feature;
@@ -107,7 +107,7 @@ public final class CheckFlagEvent extends Event
      * @param featureProperties
      */
     private static void populateFlaggedRelationProperties(final CheckFlag flag,
-            final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties,
+            final List<GeometryWithProperties> geometriesWithProperties,
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
     {
         final Iterator<FlaggedRelation> iterator = flag.getFlaggedRelations().iterator();
@@ -156,7 +156,7 @@ public final class CheckFlagEvent extends Event
      * @param featureProperties
      */
     private static void populateFlaggedObjectProperties(
-            final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties,
+            final List<GeometryWithProperties> geometriesWithProperties,
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties)
     {
         geometriesWithProperties.stream().forEach(geometryWithProperties -> Optional
@@ -190,7 +190,7 @@ public final class CheckFlagEvent extends Event
      * @param flaggedMemberOSMIds
      */
     private static void populateMemberProperties(
-            final List<GeoJsonBuilder.GeometryWithProperties> geometriesWithProperties,
+            final List<GeometryWithProperties> geometriesWithProperties,
             final Set<JsonElement> featureOsmIds, final JsonArray featureProperties,
             final Set<Long> flaggedMemberOSMIds, final Set<Long> relationMemberOsmIds)
     {
@@ -201,7 +201,7 @@ public final class CheckFlagEvent extends Event
                 .forEach(propertyMap ->
                 {
                     final Long osmid = Long.valueOf((String) propertyMap.get("osmid"));
-                    // Fore each geometry, add properties for only the members of the relation.
+                    // For each geometry, add properties for only the members of the relation.
                     // This ensures that the same properties of way sectioned edges are not
                     // duplicated. Also, only relation member properties are added and not
                     // properties
@@ -210,12 +210,10 @@ public final class CheckFlagEvent extends Event
                             && relationMemberOsmIds.contains(osmid))
                     {
                         final JsonObject properties = new JsonObject();
-
                         propertyMap.forEach((key, value) ->
                         {
                             if (key.contains("roles"))
                             {
-
                                 properties.add(key, (JsonElement) value);
                             }
                             else

@@ -33,6 +33,7 @@ import org.openstreetmap.atlas.geography.atlas.items.Relation;
 import org.openstreetmap.atlas.geography.atlas.items.RelationMember;
 import org.openstreetmap.atlas.geography.atlas.items.RelationMemberList;
 import org.openstreetmap.atlas.geography.geojson.GeoJsonBuilder;
+import org.openstreetmap.atlas.geography.geojson.GeoJsonBuilder.GeometryWithProperties;
 import org.openstreetmap.atlas.streaming.resource.WritableResource;
 import org.openstreetmap.atlas.utilities.collections.Iterables;
 import org.openstreetmap.atlas.utilities.collections.MultiIterable;
@@ -326,18 +327,17 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
     }
 
     /**
-     * Concatenates lists of {@link GeoJsonBuilder.GeometryWithProperties}
+     * Concatenates lists of {@link GeometryWithProperties}
      *
-     * @return a list of {@link GeoJsonBuilder.GeometryWithProperties} representing all flagged
-     *         geometries
+     * @return a list of {@link GeometryWithProperties} representing all flagged geometries
      */
-    public List<GeoJsonBuilder.GeometryWithProperties> getLocationIterableProperties()
+    public List<GeometryWithProperties> getLocationIterableProperties()
     {
 
         return Stream
                 .concat(getListOfGeoJsonObjectsForFlaggedRelation().stream(),
                         this.flaggedObjects.stream()
-                                .map(flaggedObject -> new GeoJsonBuilder.GeometryWithProperties(
+                                .map(flaggedObject -> new GeometryWithProperties(
                                         flaggedObject.getGeometry(),
                                         new HashMap<>(flaggedObject.getProperties()))))
                 .collect(Collectors.toList());
@@ -346,12 +346,12 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
     /**
      * Creates geojson objects for the members of the flagged relations.
      *
-     * @return a list of {@link GeoJsonBuilder.GeometryWithProperties} representing all flagged
-     *         geometries of FlaggedRelation
+     * @return a list of {@link GeometryWithProperties} representing all flagged geometries of
+     *         FlaggedRelation
      */
-    public List<GeoJsonBuilder.GeometryWithProperties> getListOfGeoJsonObjectsForFlaggedRelation()
+    public List<GeometryWithProperties> getListOfGeoJsonObjectsForFlaggedRelation()
     {
-        final List<GeoJsonBuilder.GeometryWithProperties> locationIterablePropertyList = new ArrayList<>();
+        final List<GeometryWithProperties> locationIterablePropertyList = new ArrayList<>();
         final Iterator<FlaggedRelation> iterator = this.flaggedRelations.iterator();
         while (iterator.hasNext())
         {
@@ -375,13 +375,9 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
                 // If edge, consider only the master edges
                 else if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
                 {
-                    // Consider only master edges
-                    if (Edge.isMasterEdgeIdentifier(entity.getIdentifier()))
-                    {
-                        final FlaggedPolyline flaggedPolyline = new FlaggedPolyline(entity);
-                        flaggedObject = flaggedPolyline;
-                        flaggedObjectProperties.putAll(flaggedPolyline.getProperties());
-                    }
+                    final FlaggedPolyline flaggedPolyline = new FlaggedPolyline(entity);
+                    flaggedObject = flaggedPolyline;
+                    flaggedObjectProperties.putAll(flaggedPolyline.getProperties());
                 }
                 if (flaggedObject != null)
                 {
@@ -391,7 +387,7 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
                     roleDescription.addProperty("part of", relationMember.getRelationIdentifier());
                     roles.add(roleDescription);
                     flaggedObjectProperties.put("roles", roles);
-                    locationIterablePropertyList.add(new GeoJsonBuilder.GeometryWithProperties(
+                    locationIterablePropertyList.add(new GeometryWithProperties(
                             flaggedObject.getGeometry(), new HashMap<>(flaggedObjectProperties)));
                 }
             }
