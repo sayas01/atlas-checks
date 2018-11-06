@@ -106,12 +106,12 @@ public class CheckFlagTest
         // Tests if enities other than relations are also flagged
         Assert.assertEquals(flag.getFlaggedObjects().size(), 13);
         // Checks if members of flagged relations are added
-        Assert.assertEquals(flag.getFlaggedRelations().iterator().next().members().size(), 3);
+        Assert.assertEquals(flag.getFlaggedRelations().iterator().next().members().size(), 2);
         final List<GeoJsonBuilder.GeometryWithProperties> locationIterableProperties = flag
                 .getLocationIterableProperties();
         // Tests if relation member properties got added
         Assert.assertTrue(locationIterableProperties.stream()
-                .anyMatch(loc -> loc.getProperties().containsKey("role")));
+                .anyMatch(loc -> loc.getProperties().containsKey("roles")));
         // Tests if list of LocationIterableProperties are populated
         Assert.assertEquals(locationIterableProperties.size(), 18);
         // Tests if geojson objects are created for members of flagged relations

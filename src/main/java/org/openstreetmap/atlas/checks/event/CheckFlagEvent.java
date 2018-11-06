@@ -76,8 +76,7 @@ public final class CheckFlagEvent extends Event
                     featureProperties);
         }
 
-        populateFlaggedObjectProperties(geometriesWithProperties, featureOsmIds,
-                    featureProperties);
+        populateFlaggedObjectProperties(geometriesWithProperties, featureOsmIds, featureProperties);
 
         flagProperties.addProperty("feature_count", featureProperties.size());
         final JsonArray uniqueFeatureOsmIds = new JsonArray();
@@ -127,12 +126,14 @@ public final class CheckFlagEvent extends Event
             final List<RelationMember> innerRelations = next.members().stream()
                     .filter(member -> member.getEntity() instanceof Relation)
                     .collect(Collectors.toList());
-            if(!innerRelations.isEmpty())
+            if (!innerRelations.isEmpty())
             {
                 // Get properties of the member relation
-                innerRelations.stream().map(relationMember -> new FlaggedRelation((Relation) relationMember.getEntity()).getProperties())
-                    // Populate the properties of the member relations
-                    .forEach(map -> map.forEach(innerRelationProperties::addProperty));
+                innerRelations.stream()
+                        .map(relationMember -> new FlaggedRelation(
+                                (Relation) relationMember.getEntity()).getProperties())
+                        // Populate the properties of the member relations
+                        .forEach(map -> map.forEach(innerRelationProperties::addProperty));
                 featureProperties.add(innerRelationProperties);
             }
             // Set of relation member OSM IDs
@@ -164,7 +165,7 @@ public final class CheckFlagEvent extends Event
                     final JsonObject properties = new JsonObject();
                     // Consider only those geometriesWithProperties that are not members/flattened
                     // members of relations
-                    if (!propertyMap.containsKey("role"))
+                    if (!propertyMap.containsKey("roles"))
                     {
                         propertyMap.forEach(
                                 (key, value) -> properties.addProperty(key, (String) value));
@@ -210,17 +211,18 @@ public final class CheckFlagEvent extends Event
                     {
                         final JsonObject properties = new JsonObject();
 
-                        propertyMap.forEach(
-                                (key, value) -> {
-                                    if(key.contains("role"))
-                                    {
-                                        properties.add(key, (JsonElement) value);
-                                    }
-                                    else{
-                                        properties.addProperty(key, (String) value);
-                                    }
+                        propertyMap.forEach((key, value) ->
+                        {
+                            if (key.contains("roles"))
+                            {
 
-                                });
+                                properties.add(key, (JsonElement) value);
+                            }
+                            else
+                            {
+                                properties.addProperty(key, (String) value);
+                            }
+                        });
                         featureProperties.add(properties);
                         Optional.ofNullable(properties.get("osmid")).ifPresent(featureOsmIds::add);
                         flaggedMemberOSMIds.add(osmid);
@@ -248,23 +250,22 @@ public final class CheckFlagEvent extends Event
         flagPropertiesJson.addProperty("id", flag.getIdentifier());
         flagPropertiesJson.addProperty("instructions", flag.getInstructions());
         // Add additional properties
-        additionalProperties
-                .forEach((key, value) -> flagPropertiesJson.addProperty(key, value));
+        additionalProperties.forEach((key, value) -> flagPropertiesJson.addProperty(key, value));
         // Add relation properties of the flaggedRelation to all its members.
         // If relations are not flagged then the list is empty and no action will be taken.
         final Set<FlaggedRelation> flaggedRelations = flag.getFlaggedRelations();
-        if(!flaggedRelations.isEmpty())
+        if (!flaggedRelations.isEmpty())
         {
-            final JsonObject relationsJson = new JsonObject();
-            flag.getFlaggedRelations().stream().map(flaggedRelation -> flaggedRelation.getProperties())
-                    .forEach(properties ->
+            final JsonArray relationsJson = new JsonArray();
+            flag.getFlaggedRelations().stream()
+                    .map(flaggedRelation -> flaggedRelation.getProperties()).forEach(properties ->
                     {
                         final JsonObject relationPropertiesJson = new JsonObject();
                         properties.forEach(relationPropertiesJson::addProperty);
                         final String osmid = properties.get("osmid");
-                        relationsJson.add("relation_" + osmid, relationPropertiesJson);
+                        relationsJson.add(relationPropertiesJson);
                     });
-            flagPropertiesJson.add("relation", relationsJson);
+            flagPropertiesJson.add("relations", relationsJson);
         }
         // Add properties to the previously generate geojson
         flagJson.add("properties", flagPropertiesJson);

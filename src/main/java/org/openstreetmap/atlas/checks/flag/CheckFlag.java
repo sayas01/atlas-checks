@@ -363,7 +363,7 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
             {
                 final AtlasEntity entity = relationMember.getEntity();
                 final Map<String, Object> flaggedObjectProperties = new HashMap<>();
-                final JsonObject roles = new JsonObject();
+                final JsonArray roles = new JsonArray();
                 FlaggedObject flaggedObject = null;
 
                 if (entity instanceof LocationItem)
@@ -385,9 +385,12 @@ public class CheckFlag implements Iterable<Location>, Located, Serializable
                 }
                 if (flaggedObject != null)
                 {
+                    final JsonObject roleDescription = new JsonObject();
                     // Add member role and relation identifier to the property map
-                    roles.addProperty(relationMember.getRelationIdentifier()+"", relationMember.getRole());
-                    flaggedObjectProperties.put("role",roles);
+                    roleDescription.addProperty("role", relationMember.getRole());
+                    roleDescription.addProperty("part of", relationMember.getRelationIdentifier());
+                    roles.add(roleDescription);
+                    flaggedObjectProperties.put("roles", roles);
                     locationIterablePropertyList.add(new GeoJsonBuilder.GeometryWithProperties(
                             flaggedObject.getGeometry(), new HashMap<>(flaggedObjectProperties)));
                 }
