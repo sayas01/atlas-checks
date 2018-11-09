@@ -18,6 +18,7 @@ import org.openstreetmap.atlas.geography.atlas.items.Area;
 import org.openstreetmap.atlas.geography.atlas.items.AtlasEntity;
 import org.openstreetmap.atlas.geography.atlas.items.AtlasItem;
 import org.openstreetmap.atlas.geography.atlas.items.AtlasObject;
+import org.openstreetmap.atlas.geography.atlas.items.Line;
 import org.openstreetmap.atlas.geography.atlas.items.LineItem;
 import org.openstreetmap.atlas.geography.atlas.items.Relation;
 import org.openstreetmap.atlas.tags.AdministrativeLevelTag;
@@ -116,7 +117,7 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
                         && crossingItem.getTags().get("snowmobile").equals("yes")
                 || crossingItem.getOsmTags().containsKey("ski")
                         && crossingItem.getTags().get("ski").equals("yes")
-                || crossingItem instanceof LineItem && isBoundary(crossingItem);
+                || crossingItem instanceof Line && isBoundary(crossingItem);
     }
 
     public LineCrossingWaterBodyCheck(final Configuration configuration)
@@ -193,8 +194,8 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
         return osmTags.isEmpty() && relations.isEmpty()
                 // Certain relations can cross water body.
                 || canRelationCrossWaterBody(relations)
-                // If crossing item has only certain tags
-                || hasOnlyValidCrossingTags(osmTags);
+                // If crossing item has only certain tags and is not part of any relations
+                || relations.isEmpty() && hasOnlyValidCrossingTags(osmTags);
     }
 
     /**
