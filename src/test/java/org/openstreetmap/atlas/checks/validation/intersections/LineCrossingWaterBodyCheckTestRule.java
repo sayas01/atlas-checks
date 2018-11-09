@@ -1,6 +1,7 @@
 package org.openstreetmap.atlas.checks.validation.intersections;
 
 import org.openstreetmap.atlas.geography.atlas.Atlas;
+import org.openstreetmap.atlas.tags.RelationTypeTag;
 import org.openstreetmap.atlas.utilities.testing.CoreTestRule;
 import org.openstreetmap.atlas.utilities.testing.TestAtlas;
 import org.openstreetmap.atlas.utilities.testing.TestAtlas.Area;
@@ -8,6 +9,8 @@ import org.openstreetmap.atlas.utilities.testing.TestAtlas.Edge;
 import org.openstreetmap.atlas.utilities.testing.TestAtlas.Line;
 import org.openstreetmap.atlas.utilities.testing.TestAtlas.Loc;
 import org.openstreetmap.atlas.utilities.testing.TestAtlas.Node;
+import org.openstreetmap.atlas.utilities.testing.TestAtlas.Relation;
+import org.openstreetmap.atlas.utilities.testing.TestAtlas.Relation.Member;
 
 /**
  * {@link LineCrossingWaterBodyCheckTest} data generator
@@ -23,7 +26,6 @@ public class LineCrossingWaterBodyCheckTestRule extends CoreTestRule
     private static final String AREA_LOCATION_4 = "47.575371, -122.308121";
     private static final String AREA_LOCATION_5 = "47.576485, -122.307098";
     private static final String AREA_LOCATION_BETWEEN_2_AND_3 = "47.5751365,-122.3050385";
-
     private static final String LOCATION_OUTSIDE_AREA_1 = "47.578064, -122.318642";
     private static final String LOCATION_OUTSIDE_AREA_2 = "47.581829, -122.303734";
     private static final String LOCATION_OUTSIDE_AREA_3 = "47.573128, -122.292999";
@@ -182,6 +184,38 @@ public class LineCrossingWaterBodyCheckTestRule extends CoreTestRule
                             @Loc(value = AREA_LOCATION_3),
                             @Loc(value = LOCATION_OUTSIDE_AREA_4) }) })
     private Atlas invalidCrossingItemsAtlas;
+    @TestAtlas(
+            // nodes
+            nodes = { @Node(coordinates = @Loc(value = AREA_LOCATION_1)),
+                    @Node(coordinates = @Loc(value = AREA_LOCATION_2)),
+                    @Node(coordinates = @Loc(value = AREA_LOCATION_3)),
+                    @Node(coordinates = @Loc(value = AREA_LOCATION_4)),
+                    @Node(coordinates = @Loc(value = AREA_LOCATION_5)),
+                    @Node(coordinates = @Loc(value = LOCATION_OUTSIDE_AREA_1)),
+                    @Node(coordinates = @Loc(value = LOCATION_OUTSIDE_AREA_2)),
+                    @Node(coordinates = @Loc(value = LOCATION_OUTSIDE_AREA_3)),
+                    @Node(coordinates = @Loc(value = LOCATION_OUTSIDE_AREA_4)) },
+            // area
+            areas = { @Area(coordinates = { @Loc(value = AREA_LOCATION_1),
+                    @Loc(value = AREA_LOCATION_2), @Loc(value = AREA_LOCATION_3),
+                    @Loc(value = AREA_LOCATION_4),
+                    @Loc(value = AREA_LOCATION_5) }, tags = { "natural=water" }) },
+            // lines
+            lines = {
+                    // a line
+                    @Line(coordinates = { @Loc(value = LOCATION_OUTSIDE_AREA_1),
+                            @Loc(value = LOCATION_OUTSIDE_AREA_3) }, tags = {"route=road"}),
+                    // another line
+                    @Line(coordinates = { @Loc(value = LOCATION_OUTSIDE_AREA_2),
+                            @Loc(value = LOCATION_OUTSIDE_AREA_4) }, tags = {"route=road"}),
+                    // another line
+                    @Line(coordinates = { @Loc(value = LOCATION_OUTSIDE_AREA_1),
+                            @Loc(value = AREA_LOCATION_5), @Loc(value = LOCATION_OUTSIDE_AREA_3) }, tags = {"route=road"}),
+                    // another line
+                    @Line(coordinates = { @Loc(value = LOCATION_OUTSIDE_AREA_2),
+                            @Loc(value = AREA_LOCATION_3),
+                            @Loc(value = LOCATION_OUTSIDE_AREA_4) }, tags = {"route=road"}) })
+    private Atlas invalidLineCrossingAtlas;
 
     @TestAtlas(
             // nodes
@@ -261,6 +295,39 @@ public class LineCrossingWaterBodyCheckTestRule extends CoreTestRule
                             @Loc(value = LOCATION_OUTSIDE_AREA_3) }) })
     private Atlas invalidIntersectionItemsAtlas;
 
+    @TestAtlas(
+            // nodes
+            nodes = { @Node(coordinates = @Loc(value = AREA_LOCATION_1)),
+                    @Node(coordinates = @Loc(value = AREA_LOCATION_2)),
+                    @Node(coordinates = @Loc(value = AREA_LOCATION_3)),
+                    @Node(coordinates = @Loc(value = AREA_LOCATION_4)),
+                    @Node(coordinates = @Loc(value = AREA_LOCATION_5)),
+                    @Node(coordinates = @Loc(value = LOCATION_OUTSIDE_AREA_1)),
+                    @Node(coordinates = @Loc(value = LOCATION_OUTSIDE_AREA_2)),
+                    @Node(coordinates = @Loc(value = LOCATION_OUTSIDE_AREA_3)),
+                    @Node(coordinates = @Loc(value = LOCATION_OUTSIDE_AREA_4)) },
+            // area
+            areas = { @Area(coordinates = { @Loc(value = AREA_LOCATION_1),
+                    @Loc(value = AREA_LOCATION_2), @Loc(value = AREA_LOCATION_3),
+                    @Loc(value = AREA_LOCATION_4),
+                    @Loc(value = AREA_LOCATION_5) }, tags = { "natural=water" }) },
+            // lines
+            lines = {
+                    // a line
+                    @Line(coordinates = { @Loc(value = LOCATION_OUTSIDE_AREA_1),
+                            @Loc(value = LOCATION_OUTSIDE_AREA_3) }),
+                    // another line
+                    @Line(coordinates = { @Loc(value = LOCATION_OUTSIDE_AREA_2),
+                            @Loc(value = LOCATION_OUTSIDE_AREA_4) }),
+                    // another line
+                    @Line(coordinates = { @Loc(value = LOCATION_OUTSIDE_AREA_1),
+                            @Loc(value = AREA_LOCATION_5), @Loc(value = LOCATION_OUTSIDE_AREA_3) }),
+                    // another line
+                    @Line(coordinates = { @Loc(value = LOCATION_OUTSIDE_AREA_2),
+                            @Loc(value = AREA_LOCATION_3),
+                            @Loc(value = LOCATION_OUTSIDE_AREA_4) }, tags = {"route=road"}) })
+    private Atlas validLineCrossingAtlas;
+
     public Atlas invalidCrossingItemsAtlas()
     {
         return this.invalidCrossingItemsAtlas;
@@ -269,6 +336,11 @@ public class LineCrossingWaterBodyCheckTestRule extends CoreTestRule
     public Atlas invalidIntersectionItemsAtlas()
     {
         return this.invalidIntersectionItemsAtlas;
+    }
+
+    public Atlas getInvalidLineCrossingAtlas()
+    {
+        return this.invalidLineCrossingAtlas;
     }
 
     public Atlas noCrossingItemsAtlas()
@@ -284,5 +356,10 @@ public class LineCrossingWaterBodyCheckTestRule extends CoreTestRule
     public Atlas validIntersectionItemsAtlas()
     {
         return this.validIntersectionItemsAtlas;
+    }
+
+    public Atlas getValidLineCrossingAtlas()
+    {
+        return this.validLineCrossingAtlas;
     }
 }

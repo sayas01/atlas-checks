@@ -58,4 +58,20 @@ public class LineCrossingWaterBodyCheckTest
         this.verifier.actual(this.setup.validIntersectionItemsAtlas(), check);
         this.verifier.verifyEmpty();
     }
+
+    @Test
+    public void testInvalidLineCrossingAtlas()
+    {
+        this.verifier.actual(this.setup.getInvalidLineCrossingAtlas(), check);
+        this.verifier.globallyVerify(flags -> Assert.assertEquals(flags.size(), 1));
+        this.verifier.verify(flag -> Assert.assertEquals(flag.getFlaggedObjects().size(), 5));
+    }
+
+    @Test
+    public void testValidLineCrossingAtlas()
+    {
+        this.verifier.actual(this.setup.getValidLineCrossingAtlas(), check);
+        this.verifier.globallyVerify(flags -> Assert.assertEquals(flags.size(), 1));
+        this.verifier.verify(flag -> Assert.assertEquals(flag.getFlaggedObjects().size(), 5));
+    }
 }
