@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.openstreetmap.atlas.checks.atlas.predicates.TagPredicates;
 import org.openstreetmap.atlas.checks.atlas.predicates.TypePredicates;
@@ -97,7 +98,7 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
                 // It is a man-made feature and one of pier, breakwater, groyne, dyke, or embankment
                 || Validators.isOfType(crossingItem, ManMadeTag.class, ManMadeTag.PIER,
                         ManMadeTag.BREAKWATER, ManMadeTag.EMBANKMENT, ManMadeTag.GROYNE,
-                        ManMadeTag.DYKE)
+                        ManMadeTag.DYKE,ManMadeTag.PIPELINE)
                 // It is a ferry route
                 || RouteTag.isFerry(crossingItem)
                 // It has a highway tag of proposed or construction
@@ -108,7 +109,6 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
                 || Validators.isOfType(crossingItem, PowerTag.class, PowerTag.LINE,
                         PowerTag.MINOR_LINE)
                 || Validators.isOfType(crossingItem, IceRoadTag.class, IceRoadTag.YES)
-                || Validators.isOfType(crossingItem, ManMadeTag.class, ManMadeTag.PIPELINE)
                 || crossingItem.getTags().containsKey("ford")
                         && crossingItem.getOsmTags().get("ford").equals("yes")
                 || crossingItem.getOsmTags().containsKey("winter_road")
@@ -189,13 +189,15 @@ public class LineCrossingWaterBodyCheck extends BaseCheck<Long>
     {
         final Map<String, String> osmTags = crossingLineItem.getOsmTags();
         final Set<Relation> relations = crossingLineItem.relations();
+        final Set<Relation> multipolygonRelations = relations.stream()
+                .filter(relation -> relation.isMultiPolygon()).collect(Collectors.toSet());
         // Crossing item is not part of any relation and has no tags, then infer it as part of a
         // boundary/coastline relation that is not ingested in the atlas.
         return osmTags.isEmpty() && relations.isEmpty()
-                // Certain relations can cross water body.
-                || canRelationCrossWaterBody(relations)
-                // If crossing item has only certain tags and is not part of any relations
-                || relations.isEmpty() && hasOnlyValidCrossingTags(osmTags);
+                // Certain multipolygon relations can cross water body.
+                || canRelationCrossWaterBody(multipolygonRelations)
+                // If crossing item has only certain tags and is not part of multipolygon relations
+                || multipolygonRelations.isEmpty() && hasOnlyValidCrossingTags(osmTags);
     }
 
     /**
