@@ -88,7 +88,7 @@ public class OverlappingEdgeCheck extends BaseCheck<Long>
                 start = end;
             }
 
-            if (overlappingItems.size() > 0 &&  this.haveSameLevels(overlappingItems, object))
+            if (overlappingItems.size() > 0 && this.haveSameLevels(overlappingItems, object))
             {
                 this.markAsFlagged(object.getOsmIdentifier());
                 // Mark overlapping objects as flagged
@@ -114,11 +114,11 @@ public class OverlappingEdgeCheck extends BaseCheck<Long>
     {
         for (final AtlasObject obj : overlappingEdges)
         {
-            if(!obj.getOsmTags().containsKey("level")|| !object.getOsmTags().containsKey("level"))
+            if (!obj.getOsmTags().containsKey("level") || !object.getOsmTags().containsKey("level"))
             {
                 return true;
             }
-            if(obj.getOsmTags().get("level").equals(object.getOsmTags().get("level")))
+            if (obj.getOsmTags().get("level").equals(object.getOsmTags().get("level")))
             {
                 return true;
             }

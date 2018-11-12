@@ -227,6 +227,24 @@
       "difficulty": "HARD"
     }
   },
+  "OverlappingEdgeCheck": {
+    "highway.priority.minimum":"residential",
+    "challenge": {
+      "description": "Tasks will include highways that are overlapped by another highway.",
+      "blurb": "Overlapping Highways",
+      "instruction": "Open your favorite editor and either remove the overlap way segment or correct tagging so that only a single highway remains.",
+      "difficulty": "EASY",
+      "defaultPriority": "LOW",
+      "highPriorityRule": {
+        "condition":"OR",
+        "rules":["highway=motorway","highway=motorway_link","highway=trunk","highway=trunk_link"]
+      },
+      "mediumPriorityRule": {
+        "condition":"OR",
+        "rules":["highway=primary","highway=primary_link","highway=secondary","highway=secondary_link"]
+      }
+    }
+  },
   "RoundaboutClosedLoopCheck": {
     "challenge": {
       "description": "A roundabout should be formed by one-way edges with no dead-end nodes.",
