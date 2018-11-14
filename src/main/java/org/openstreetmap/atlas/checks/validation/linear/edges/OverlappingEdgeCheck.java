@@ -3,6 +3,7 @@ package org.openstreetmap.atlas.checks.validation.linear.edges;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -42,6 +43,7 @@ public class OverlappingEdgeCheck extends BaseCheck<Long>
     // Minimum highway priority for an edge to not be allowed to overlap a pedestrian area
     private static final String HIGHWAY_MINIMUM_PRIORITY_DEFAULT = HighwayTag.RESIDENTIAL
             .toString();
+    private static final String ZERO = "0";
     private final HighwayTag highwayMinimumPriority;
 
     private static Predicate<Edge> notEqual(final AtlasObject object)
@@ -78,17 +80,18 @@ public class OverlappingEdgeCheck extends BaseCheck<Long>
                     // we only have to check one end for intersecting edges
                     final Rectangle box = start.boxAround(Distance.meters(0));
                     // add all overlapping edges not yet flagged and not pedestrian areas
-                    overlappingItems.addAll(Iterables
-                            .stream(atlas.edgesIntersecting(box, Edge::isMasterEdge))
-                            .filter(notEqual(object).and(notIn(object))
-                                    .and(overlapsSegment(start, end))
-                                    .and(notPedestrianAreas((Edge) object)))
-                            .collectToSet());
+                    overlappingItems.addAll(
+                            Iterables.stream(atlas.edgesIntersecting(box, Edge::isMasterEdge))
+                                    .filter(notEqual(object).and(notIn(object))
+                                            .and(overlapsSegment(start, end)).and(
+                                                    notPedestrianAreas((Edge) object))
+                                            .and(this.haveSameLevels(object)))
+                                    .collectToSet());
                 }
                 start = end;
             }
 
-            if (overlappingItems.size() > 0 && this.haveSameLevels(overlappingItems, object))
+            if (overlappingItems.size() > 0)
             {
                 this.markAsFlagged(object.getOsmIdentifier());
                 // Mark overlapping objects as flagged
@@ -109,21 +112,36 @@ public class OverlappingEdgeCheck extends BaseCheck<Long>
         return Optional.empty();
     }
 
-    private Boolean haveSameLevels(final Set<AtlasObject> overlappingEdges,
-            final AtlasObject object)
+    /**
+     * Evaluates if the {@link AtlasObject} and the overlapping items have same level. If they have
+     * same level, then it needs to be flagged.
+     * 
+     * @param object
+     * @return {@code true} if the {@link AtlasObject} and overlapping items have same level.
+     */
+    private Predicate<Edge> haveSameLevels(final AtlasObject object)
     {
-        for (final AtlasObject obj : overlappingEdges)
+        System.out.println(object.getTag("level"));
+        final Map<String, String> osmTagsObject = object.getOsmTags();
+        final boolean objectHasLevel = osmTagsObject.containsKey("level");
+        final String objectLevel = osmTagsObject.get("level");
+        // If object level and overlapping item level are equal
+        return edge ->
         {
-            if (!obj.getOsmTags().containsKey("level") || !object.getOsmTags().containsKey("level"))
-            {
-                return true;
-            }
-            if (obj.getOsmTags().get("level").equals(object.getOsmTags().get("level")))
-            {
-                return true;
-            }
-        }
-        return false;
+            final Map<String, String> edgeOsmTags = edge.getOsmTags();
+            final boolean edgeHasLevel = edgeOsmTags.containsKey("level");
+            final String edgeLevel = edgeOsmTags.get("level");
+            // If both edge level and object level are same
+            final boolean hasSameLevel = edgeHasLevel && objectHasLevel
+                    && objectLevel.equals(edgeLevel)
+                    // If object has no level and overlaping item has zero level
+                    || edgeHasLevel && edgeLevel.equals(ZERO) && !objectHasLevel
+            // or overlapping item has no level and object has zero level
+                    || objectHasLevel && objectLevel.equals(ZERO) && !edgeHasLevel
+            // or if both overlapping edge and object has no level tags
+                    || !edgeHasLevel && !objectHasLevel;
+            return hasSameLevel;
+        };
     }
 
     @Override
