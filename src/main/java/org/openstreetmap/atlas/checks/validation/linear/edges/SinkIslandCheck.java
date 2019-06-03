@@ -250,7 +250,9 @@ public class SinkIslandCheck extends BaseCheck<Long>
                                         AMENITY_VALUES_TO_EXCLUDE)
                                         || Validators.isOfType(area, AerowayTag.class))
                         .spliterator(), false)
-                .anyMatch(area -> area.asPolygon().fullyGeometricallyEncloses(edge.asPolyLine()));
+                .anyMatch(area -> area.asPolygon().fullyGeometricallyEncloses(edge.asPolyLine())
+                        || (Validators.isOfType(area, AerowayTag.class)
+                                && area.asPolygon().intersects(edge.asPolyLine())));
     }
 
     /**
