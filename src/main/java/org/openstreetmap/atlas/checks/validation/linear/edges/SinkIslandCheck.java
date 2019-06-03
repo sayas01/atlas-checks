@@ -1,18 +1,15 @@
 package org.openstreetmap.atlas.checks.validation.linear.edges;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.lang.StringUtils;
 import org.openstreetmap.atlas.checks.atlas.predicates.TagPredicates;
 import org.openstreetmap.atlas.checks.base.BaseCheck;
 import org.openstreetmap.atlas.checks.flag.CheckFlag;
@@ -46,7 +43,7 @@ public class SinkIslandCheck extends BaseCheck<Long>
     private static final List<String> FALLBACK_INSTRUCTIONS = Collections
             .singletonList("Road is impossible to get out of.");
     private static final AmenityTag[] AMENITY_VALUES_TO_EXCLUDE = { AmenityTag.PARKING,
-            AmenityTag.PARKING_SPACE, AmenityTag.MOTORCYCLE_PARKING, AmenityTag.PARKING_ENTRANCE};
+            AmenityTag.PARKING_SPACE, AmenityTag.MOTORCYCLE_PARKING, AmenityTag.PARKING_ENTRANCE };
     private static final String DEFAULT_MINIMUM_HIGHWAY_TYPE = "SERVICE";
     private static final long serialVersionUID = -1432150496331502258L;
     private final int storeSize;
@@ -79,16 +76,12 @@ public class SinkIslandCheck extends BaseCheck<Long>
     {
         return object instanceof Edge
                 // Ignore any highways tagged as areas
-                && !TagPredicates.IS_AREA.test(object)
-                && !Validators.isOfType(object, AerowayTag.class, AerowayTag.TAXIWAY,
-            AerowayTag.RUNWAY)
-                && HighwayTag.isCarNavigableHighway(object) && !RouteTag.isFerry(object)
-                && !this.isFlagged(object.getIdentifier())
+                && !TagPredicates.IS_AREA.test(object) && HighwayTag.isCarNavigableHighway(object)
+                && !RouteTag.isFerry(object) && !this.isFlagged(object.getIdentifier())
                 && ((Edge) object).highwayTag()
                         .isMoreImportantThanOrEqualTo(this.minimumHighwayType)
                 && !(this.isServiceRoad((Edge) object)
-                        && this.isWithinAreasWithExcludedAmenityTags((Edge) object))
-              ;
+                        && this.isWithinAreasWithExcludedAmenityTags((Edge) object));
     }
 
     @Override
@@ -194,8 +187,8 @@ public class SinkIslandCheck extends BaseCheck<Long>
     {
         return object instanceof Edge
                 // Ignore any highways tagged as areas
-                && !TagPredicates.IS_AREA.test(object)
-                &&  HighwayTag.isCarNavigableHighway(object) && !RouteTag.isFerry(object);
+                && !TagPredicates.IS_AREA.test(object) && HighwayTag.isCarNavigableHighway(object)
+                && !RouteTag.isFerry(object);
     }
 
     /**
@@ -254,7 +247,8 @@ public class SinkIslandCheck extends BaseCheck<Long>
                 .stream(edge.getAtlas()
                         .areasIntersecting(edge.bounds(),
                                 area -> Validators.isOfType(area, AmenityTag.class,
-                                        AMENITY_VALUES_TO_EXCLUDE) || Validators.isOfType(area, AerowayTag.class))
+                                        AMENITY_VALUES_TO_EXCLUDE)
+                                        || Validators.isOfType(area, AerowayTag.class))
                         .spliterator(), false)
                 .anyMatch(area -> area.asPolygon().fullyGeometricallyEncloses(edge.asPolyLine()));
     }
