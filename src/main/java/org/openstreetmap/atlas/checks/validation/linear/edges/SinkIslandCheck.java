@@ -317,7 +317,7 @@ public class SinkIslandCheck extends BaseCheck<Long>
     private boolean isCarNavigable(final Edge edge)
     {
         return HighwayTag.isCarNavigableHighway(edge) && !AccessTag.isPrivate(edge)
-                && !Validators.isNotOfType(edge, MotorVehicleTag.class, MotorVehicleTag.NO)
-                && !Validators.isOfType(edge, MotorcarTag.class, MotorcarTag.NO);
+                && !((Validators.isOfType(edge,MotorVehicleTag.class,MotorVehicleTag.NO) ||
+                Validators.isOfType(edge,MotorcarTag.class,MotorcarTag.NO)));
     }
 }
