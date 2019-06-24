@@ -208,7 +208,8 @@ public class SinkIslandCheck extends BaseCheck<Long>
     {
         final Edge edge = (Edge) object;
         final Node endNode = edge.end();
-        return Validators.isOfType(endNode, AmenityTag.class, AMENITY_VALUES_TO_EXCLUDE);
+        return Validators.isOfType(endNode, AmenityTag.class, AMENITY_VALUES_TO_EXCLUDE)
+                || Validators.isOfType(edge.start(), AmenityTag.class, AmenityTag.PARKING_ENTRANCE);
     }
 
     /**
