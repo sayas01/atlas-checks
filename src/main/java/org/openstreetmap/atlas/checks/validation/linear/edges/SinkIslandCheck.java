@@ -16,9 +16,13 @@ import org.openstreetmap.atlas.checks.flag.CheckFlag;
 import org.openstreetmap.atlas.geography.atlas.items.AtlasObject;
 import org.openstreetmap.atlas.geography.atlas.items.Edge;
 import org.openstreetmap.atlas.geography.atlas.items.Node;
+import org.openstreetmap.atlas.tags.AccessTag;
 import org.openstreetmap.atlas.tags.AerowayTag;
 import org.openstreetmap.atlas.tags.AmenityTag;
+import org.openstreetmap.atlas.tags.BuildingTag;
 import org.openstreetmap.atlas.tags.HighwayTag;
+import org.openstreetmap.atlas.tags.MotorVehicleTag;
+import org.openstreetmap.atlas.tags.MotorcarTag;
 import org.openstreetmap.atlas.tags.RouteTag;
 import org.openstreetmap.atlas.tags.ServiceTag;
 import org.openstreetmap.atlas.tags.SyntheticBoundaryNodeTag;
@@ -74,14 +78,13 @@ public class SinkIslandCheck extends BaseCheck<Long>
     @Override
     public boolean validCheckForObject(final AtlasObject object)
     {
-        return object instanceof Edge
-                // Ignore any highways tagged as areas
-                && !TagPredicates.IS_AREA.test(object) && HighwayTag.isCarNavigableHighway(object)
-                && !RouteTag.isFerry(object) && !this.isFlagged(object.getIdentifier())
+        return this.validEdge(object) && !this.isFlagged(object.getIdentifier())
                 && ((Edge) object).highwayTag()
-                        .isMoreImportantThanOrEqualTo(this.minimumHighwayType)
+                .isMoreImportantThanOrEqualTo(this.minimumHighwayType)
                 && !(this.isServiceRoad((Edge) object)
-                        && this.isWithinAreasWithExcludedAmenityTags((Edge) object));
+                && this.isWithinAreasWithExcludedAmenityTags((Edge) object))
+                && !(Validators.isOfType(object, HighwayTag.class, HighwayTag.SERVICE)
+                && this.intersectsAirportOrBuilding((Edge) object));
     }
 
     @Override
@@ -186,9 +189,10 @@ public class SinkIslandCheck extends BaseCheck<Long>
     private boolean validEdge(final AtlasObject object)
     {
         return object instanceof Edge
+                // Only allow car navigable highways and ignore ferries
+                && this.isCarNavigable((Edge)object) && !RouteTag.isFerry(object)
                 // Ignore any highways tagged as areas
-                && !TagPredicates.IS_AREA.test(object) && HighwayTag.isCarNavigableHighway(object)
-                && !RouteTag.isFerry(object);
+                && !TagPredicates.IS_AREA.test(object);
     }
 
     /**
@@ -204,7 +208,6 @@ public class SinkIslandCheck extends BaseCheck<Long>
     {
         final Edge edge = (Edge) object;
         final Node endNode = edge.end();
-
         return Validators.isOfType(endNode, AmenityTag.class, AMENITY_VALUES_TO_EXCLUDE);
     }
 
@@ -230,7 +233,8 @@ public class SinkIslandCheck extends BaseCheck<Long>
                 || SyntheticBoundaryNodeTag.isBoundaryNode(edge.start())
                 // Ignore edges that are of type service and is connected to pedestrian navigable
                 // ways
-                || this.isServiceRoad(edge) && this.isConnectedToPedestrianNavigableHighway(edge);
+                || this.isServiceRoad(edge) && this.isConnectedToPedestrianNavigableHighway(edge)
+                || (Validators.isOfType(edge, HighwayTag.class, HighwayTag.SERVICE) && this.intersectsAirportOrBuilding(edge));
     }
 
     /**
@@ -247,13 +251,30 @@ public class SinkIslandCheck extends BaseCheck<Long>
                 .stream(edge.getAtlas()
                         .areasIntersecting(edge.bounds(),
                                 area -> Validators.isOfType(area, AmenityTag.class,
-                                        AMENITY_VALUES_TO_EXCLUDE)
-                                        || Validators.isOfType(area, AerowayTag.class))
+                                        AMENITY_VALUES_TO_EXCLUDE))
                         .spliterator(), false)
-                .anyMatch(area -> area.asPolygon().fullyGeometricallyEncloses(edge.asPolyLine())
-                        || (Validators.isOfType(area, AerowayTag.class)
-                                && area.asPolygon().intersects(edge.asPolyLine())));
+                .anyMatch(area -> area.asPolygon().fullyGeometricallyEncloses(edge.asPolyLine()));
     }
+
+    /**
+     * Checks if the edge is within or intersects airport polygon. Airport polygon is an atlas area
+     * with {@link AerowayTag} tag.
+     *
+     * @param edge any edge
+     * @return true if the edge is within or intersects airport polygon
+     */
+    private boolean intersectsAirportOrBuilding(final Edge edge)
+    {
+       return StreamSupport.stream(edge.getAtlas().areasIntersecting(edge.bounds(),
+               area -> Validators.hasValuesFor(area, AmenityTag.class) ||BuildingTag.isBuilding(area)
+                       ||Validators.hasValuesFor(area, AerowayTag.class)).spliterator(), false).count()
+               >0;
+//               || edge.connectedEdges().stream().anyMatch(connectedEdge->
+//               Validators.isOfType(connectedEdge, AmenityTag.class,
+//               AMENITY_VALUES_TO_EXCLUDE)
+
+    }
+
 
     /**
      * Checks if an {@link Edge} is of type service
@@ -279,5 +300,20 @@ public class SinkIslandCheck extends BaseCheck<Long>
     private boolean isConnectedToPedestrianNavigableHighway(final Edge edge)
     {
         return edge.connectedEdges().stream().anyMatch(HighwayTag::isPedestrianNavigableHighway);
+    }
+
+    /**
+     * Checks if the edge is car navigable or not. A car navigable edge is an edge with highway type
+     * within the car navigable enum set and with certain accessibility tag value = !no
+     *
+     * @param edge any edge
+     * @return true if the edge is car navigable, else false
+     */
+    private boolean isCarNavigable(final Edge edge)
+    {
+        return HighwayTag.isCarNavigableHighway(edge)
+                && !AccessTag.isPrivate(edge)
+                && !Validators.isNotOfType(edge, MotorVehicleTag.class, MotorVehicleTag.NO)
+                && !Validators.isOfType(edge, MotorcarTag.class,MotorcarTag.NO);
     }
 }
