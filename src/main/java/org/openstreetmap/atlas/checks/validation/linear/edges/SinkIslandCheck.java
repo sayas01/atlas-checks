@@ -78,6 +78,10 @@ public class SinkIslandCheck extends BaseCheck<Long>
     @Override
     public boolean validCheckForObject(final AtlasObject object)
     {
+        if(object.getOsmIdentifier()==516214797)
+        {
+            System.out.println("516214797");
+        }
         return this.validEdge(object) && !this.isFlagged(object.getIdentifier())
                 && ((Edge) object).highwayTag()
                         .isMoreImportantThanOrEqualTo(this.minimumHighwayType)
@@ -274,10 +278,6 @@ public class SinkIslandCheck extends BaseCheck<Long>
                                 || BuildingTag.isBuilding(area)
                                 || Validators.hasValuesFor(area, AerowayTag.class))
                 .spliterator(), false).count() > 0;
-        // || edge.connectedEdges().stream().anyMatch(connectedEdge->
-        // Validators.isOfType(connectedEdge, AmenityTag.class,
-        // AMENITY_VALUES_TO_EXCLUDE)
-
     }
 
     /**
