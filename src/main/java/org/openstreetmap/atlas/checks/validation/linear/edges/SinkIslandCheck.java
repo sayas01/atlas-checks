@@ -15,7 +15,6 @@ import org.openstreetmap.atlas.checks.base.BaseCheck;
 import org.openstreetmap.atlas.checks.flag.CheckFlag;
 import org.openstreetmap.atlas.geography.atlas.items.AtlasObject;
 import org.openstreetmap.atlas.geography.atlas.items.Edge;
-import org.openstreetmap.atlas.geography.atlas.items.Node;
 import org.openstreetmap.atlas.tags.AccessTag;
 import org.openstreetmap.atlas.tags.AerowayTag;
 import org.openstreetmap.atlas.tags.AmenityTag;
@@ -78,10 +77,6 @@ public class SinkIslandCheck extends BaseCheck<Long>
     @Override
     public boolean validCheckForObject(final AtlasObject object)
     {
-        if(object.getOsmIdentifier()==516214797)
-        {
-            System.out.println("516214797");
-        }
         return this.validEdge(object) && !this.isFlagged(object.getIdentifier())
                 && ((Edge) object).highwayTag()
                         .isMoreImportantThanOrEqualTo(this.minimumHighwayType)
@@ -208,11 +203,11 @@ public class SinkIslandCheck extends BaseCheck<Long>
      * @return {@code true} if the end node of the end has one of the AMENITY_VALUES_TO_EXCLUDE, and
      *         {@code false} otherwise
      */
-    private boolean endNodeHasAmenityTypeToExclude(final AtlasObject object)
+    private boolean endOrStartNodeHasAmenityTypeToExclude(final AtlasObject object)
     {
         final Edge edge = (Edge) object;
-        final Node endNode = edge.end();
-        return Validators.isOfType(endNode, AmenityTag.class, AMENITY_VALUES_TO_EXCLUDE)
+        return Validators.isOfType(edge.end(), AmenityTag.class, AMENITY_VALUES_TO_EXCLUDE)
+                // Parking garage garage entrance node
                 || Validators.isOfType(edge.start(), AmenityTag.class, AmenityTag.PARKING_ENTRANCE);
     }
 
@@ -231,7 +226,7 @@ public class SinkIslandCheck extends BaseCheck<Long>
         // loop and assume that whether the check was a flag or not was handled by the other process
         return this.isFlagged(edge.getIdentifier())
                 // We don't want to handle certain types of parking amenities
-                || this.endNodeHasAmenityTypeToExclude(edge)
+                || this.endOrStartNodeHasAmenityTypeToExclude(edge)
                 // Ignore edges that have been way sectioned at the border, as has high probability
                 // of creating a false positive due to the sectioning of the way
                 || SyntheticBoundaryNodeTag.isBoundaryNode(edge.end())
@@ -317,7 +312,7 @@ public class SinkIslandCheck extends BaseCheck<Long>
     private boolean isCarNavigable(final Edge edge)
     {
         return HighwayTag.isCarNavigableHighway(edge) && !AccessTag.isPrivate(edge)
-                && !((Validators.isOfType(edge,MotorVehicleTag.class,MotorVehicleTag.NO) ||
-                Validators.isOfType(edge,MotorcarTag.class,MotorcarTag.NO)));
+                && !(Validators.isOfType(edge, MotorVehicleTag.class, MotorVehicleTag.NO)
+                        || Validators.isOfType(edge, MotorcarTag.class, MotorcarTag.NO));
     }
 }
