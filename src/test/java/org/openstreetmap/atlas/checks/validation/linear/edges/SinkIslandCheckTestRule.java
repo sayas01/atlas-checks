@@ -78,7 +78,7 @@ public class SinkIslandCheckTestRule extends CoreTestRule
     private Atlas singleEdgeAtlas;
 
     @TestAtlas(nodes = { @Node(coordinates = @Loc(value = TEST_6)),
-            @Node(coordinates = @Loc(value = TEST_7), tags = { "amenity=PARKING_ENTRANCE" }) },
+            @Node(coordinates = @Loc(value = TEST_7), tags = { "amenity=parking" }) },
 
             edges = { @Edge(id = "360978519000003", coordinates = { @Loc(value = TEST_6),
                     @Loc(value = TEST_7) }, tags = { "highway=primary", "oneway=yes" }) })
