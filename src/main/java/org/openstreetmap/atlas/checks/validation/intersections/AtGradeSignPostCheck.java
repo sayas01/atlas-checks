@@ -79,15 +79,18 @@ public class AtGradeSignPostCheck extends BaseCheck<String>
     private static final long serialVersionUID = -7428641176420422187L;
     // Primary road (inEdge) connected to trunk, primary, secondary roads (outEdges) are treated as
     // valid intersection
-    private static final List<String> CONNECTIONS_TO_PRIMARY = Arrays.asList("trunk", "primary",
-            "secondary");
+    private static final String PRIMARY = HighwayTag.PRIMARY.getTagValue();
+    private static final String SECONDARY = HighwayTag.SECONDARY.getTagValue();
+    private static final String TRUNK = HighwayTag.TRUNK.getTagValue();
+    private static final List<String> CONNECTIONS_TO_PRIMARY = Arrays.asList(TRUNK, PRIMARY,
+            SECONDARY);
     // Trunk road (inEdge) connected to primary road (outEdge) is treated as valid intersection
-    private static final List<String> CONNECTIONS_TO_TRUNK = Collections.singletonList("primary");
+    private static final List<String> CONNECTIONS_TO_TRUNK = Collections.singletonList(PRIMARY);
     // Secondary road (inEdge) connected to primary road (outEdge) is treated as valid intersection
     private static final List<String> CONNECTIONS_TO_SECONDARY = Collections
-            .singletonList("primary");
+            .singletonList(PRIMARY);
     private static final ImmutableMap<String, List<String>> CONNECTED_HIGHWAY_TYPES_MAP = ImmutableMap
-            .of("primary", CONNECTIONS_TO_PRIMARY, "trunk", CONNECTIONS_TO_TRUNK, "secondary",
+            .of(PRIMARY, CONNECTIONS_TO_PRIMARY, TRUNK, CONNECTIONS_TO_TRUNK, SECONDARY,
                     CONNECTIONS_TO_SECONDARY);
     private static final String NO_DESTINATION_SIGN_RELATION_INSTRUCTION = "Node {0,number,#} forms an at-grade junction but is not part of "
             + "a destination sign relation. Verify and create a destination sign relation with the node as \"intersection\" member and following "
