@@ -46,6 +46,20 @@ public class InvalidCharacterNameTagCheckTest
     }
 
     @Test
+    public void testInvalidCharacterInArea()
+    {
+        this.verifier.actual(this.setup.getInvalidCharacterInAreaAtlas(), this.check);
+        this.verifier.globallyVerify(flags -> Assert.assertEquals(1, flags.size()));
+    }
+
+    @Test
+    public void testInvalidCharacterInRelation()
+    {
+        this.verifier.actual(this.setup.getInvalidCharacterInRelationAtlas(), this.check);
+        this.verifier.globallyVerify(flags -> Assert.assertEquals(1, flags.size()));
+    }
+
+    @Test
     public void testNumbersInLocalizedNameTag()
     {
         this.verifier.actual(this.setup.getNumbersInLocalizedNameTagAtlas(), this.check);

@@ -22,9 +22,9 @@ import org.openstreetmap.atlas.utilities.collections.Iterables;
 import org.openstreetmap.atlas.utilities.configuration.Configuration;
 
 /**
- * The purpose of this check is to identify valid atlas objects(verified through a configurable
- * filter) with numbers, special characters, double and smart quotes in their name and localized
- * name tags.
+ * The purpose of this check is to identify water features (certain Lines, Areas and Relations that
+ * pass a configurable filter) with numbers, special characters, double and smart quotes in their
+ * name and localized name tags.
  *
  * @author sayas01
  */
@@ -53,9 +53,8 @@ public class InvalidCharacterNameTagCheck extends BaseCheck<String>
         final Set<Optional<IsoLanguage>> languages = IsoLanguage.allLanguageCodes().stream()
                 .map(languageCode -> Optional.of(IsoLanguage.forLanguageCode(languageCode).get()))
                 .collect(Collectors.toSet());
-        // The empty optional is added here so that the keyNames that are populated in the set
-        // include the non localized versions, ie. simply "name". If not added will only include
-        // localized keys like "name:en" and "name:fr"
+        // The empty optional is added here to include the non localized versions, ie. "name",
+        // along with the localized versions.
         languages.add(Optional.empty());
         for (final Optional<IsoLanguage> language : languages)
         {
@@ -86,22 +85,20 @@ public class InvalidCharacterNameTagCheck extends BaseCheck<String>
     {
         final Set<String> invalidCharacterNameTags = new HashSet<>();
         final Optional<String> nameTag = NameTag.getNameOf(object);
+        // If NameTag is present and its value matches the invalid character pattern, add the Name
+        // tag to the invalidCharacterNameTags set.
         if (nameTag.isPresent() && INVALID_CHARS_REGEX_DEFAULT.matcher(nameTag.get()).matches())
         {
             invalidCharacterNameTags.add(NameTag.KEY);
 
         }
+        // If the atlas object has localized name tags that matches the invalid character pattern,
+        // add it to the invalidCharacterNameTags set.
         Iterables.stream(object.getOsmTags().keySet()).filter(this.localizedNameTags::contains)
-                .filter(filteredKey -> INVALID_CHARS_REGEX_DEFAULT
-                        .matcher(object.getTag(filteredKey).get()).matches())
+                .filter(localizedNameTag -> INVALID_CHARS_REGEX_DEFAULT
+                        .matcher(object.getTag(localizedNameTag).get()).matches())
                 .forEach(invalidCharacterNameTags::add);
-        if (!invalidCharacterNameTags.isEmpty())
-        {
-            this.markAsFlagged(String.valueOf(object.getOsmIdentifier()));
-        }
-        final String localizedInstruction = this.getLocalizedInstruction(0,
-                object.getOsmIdentifier(), String.join(", ", invalidCharacterNameTags));
-        System.out.print(localizedInstruction);
+
         return invalidCharacterNameTags.isEmpty() ? Optional.empty()
                 : Optional.of(this.createFlag(object, this.getLocalizedInstruction(0,
                         object.getOsmIdentifier(), String.join(", ", invalidCharacterNameTags))));
